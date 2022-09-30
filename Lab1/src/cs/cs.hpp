@@ -50,7 +50,7 @@ struct Layout
     {
         this->width = width;
         this->height = height;
-        *ll_tile = {Tile(nullptr, nullptr, nullptr, nullptr, {coordinate(0, 0)}, width, height, -1)};
+        ll_tile = new Tile(nullptr, nullptr, nullptr, nullptr, {coordinate(0, 0)}, width, height, -1);
     } 
     int width;
     int height;
