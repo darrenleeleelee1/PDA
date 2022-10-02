@@ -60,6 +60,15 @@ struct Layout
     Tile* pointFinding(Tile* cur, coordinate p); // Before use it, check whether it is nullptr
     std::vector<Tile*> neighborFinding(Tile* cur, orientation ori);
     bool areaSearch(coordinate ul_coor, int desired_width, int desired_height); // return desired area whether include a solid tile
-    std::vector<Tile*> directedAreaEnumeration();
+    std::vector<Tile*> directedAreaEnumeration(coordinate ul_coor, int desired_width, int desired_height);
     bool tileCreation(coordinate ul_coor, int desired_width, int desired_height, int index); // if create success, return true
 };
+
+
+void directedAreaEnumeration_R_procedure(Layout* L, std::vector<Tile*> &t_v, Tile* cur,coordinate ul_coor, int desired_width, int desired_height);
+
+Tile* split(Layout *l_p, Tile* bot_tile, int lower_tile_height);
+
+std::pair<Tile*, Tile*> divide(Tile* mid_tile, coordinate ul_coor, int desired_width);
+
+void merge(Layout *L, Tile* top_tile, Tile* bot_tile);
