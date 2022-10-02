@@ -321,9 +321,9 @@ std::pair<Tile*, Tile*> divide(Tile* mid_tile, coordinate ul_coor, int desired_w
     
     // stitch bl
     Tile* tmp_p = left_tile->lb;
-    while(!isNeighbor(orientation::Top, tmp_p, mid_tile) && tmp_p->tr != nullptr) tmp_p = tmp_p->tr;
+    while(tmp_p != nullptr && !isNeighbor(orientation::Top, tmp_p, mid_tile) && tmp_p->tr != nullptr) tmp_p = tmp_p->tr;
     mid_tile->lb = tmp_p;
-    while(!isNeighbor(orientation::Top, tmp_p, right_tile) && tmp_p->tr != nullptr) tmp_p = tmp_p->tr;
+    while(tmp_p != nullptr && !isNeighbor(orientation::Top, tmp_p, right_tile) && tmp_p->tr != nullptr) tmp_p = tmp_p->tr;
     right_tile->lb = tmp_p;
     return std::make_pair(left_tile, right_tile);
 }
@@ -355,13 +355,19 @@ void merge(Layout *L, Tile* top_tile, Tile* bot_tile)
 }
 bool Layout::tileCreation(coordinate ul_coor, int desired_width, int desired_height, int index)
 {
-    Tile* topmost, *bottommost, *start_tile, *last_tile;
-    Tile* pre_left, *pre_mid, *pre_right;
+    Tile *topmost = nullptr, *bottommost = nullptr, *start_tile = nullptr, *last_tile = nullptr;
+    Tile *pre_left = nullptr, *pre_mid = nullptr, *pre_right = nullptr;
 
     if(!Layout::areaSearch(ul_coor, desired_width, desired_height)) start_tile = Layout::pointFinding(Layout::ll_tile, ul_coor);
     else return false;
 
-    if(ul_coor.y == start_tile->ll_coor.y) // ul_coor 壓在tile上 top不需split 但start_tile需要往下找一個
+    // start_tile == nullptr 表示超出整個layout
+    if(start_tile == nullptr)
+    {
+        topmost = nullptr;
+        start_tile = Layout::pointFinding(Layout::ll_tile, {coordinate(ul_coor.x, ul_coor.y - 1)});
+    }
+    else if(ul_coor.y == start_tile->ll_coor.y) // ul_coor 壓在tile上 top不需split 但start_tile需要往下找一個
     {
         topmost = start_tile;
         start_tile = Layout::pointFinding(Layout::ll_tile, {coordinate(ul_coor.x, ul_coor.y - 1)});
@@ -372,7 +378,12 @@ bool Layout::tileCreation(coordinate ul_coor, int desired_width, int desired_hei
     }
 
     bottommost = Layout::pointFinding(Layout::ll_tile, {coordinate(ul_coor.x, ul_coor.y - desired_height)});
-    if(bottommost->ll_coor.y == ul_coor.y - desired_height) // ll_coor 壓在tile上 bot不需split 但bottommost需往下找一個
+    if((ul_coor.y - desired_height) == 0)
+    {
+        last_tile = bottommost;
+        bottommost = nullptr;
+    }
+    else if(bottommost->ll_coor.y == ul_coor.y - desired_height) // ll_coor 壓在tile上 bot不需split 但bottommost需往下找一個
     {
         last_tile = bottommost;
         bottommost = Layout::pointFinding(Layout::ll_tile, {coordinate(ul_coor.x, ul_coor.y - desired_height - 1)});
@@ -398,12 +409,12 @@ bool Layout::tileCreation(coordinate ul_coor, int desired_width, int desired_hei
     space_tile.push_back(last_tile);
 
     // Divide every space tile into 3 piece
-    Tile *left_tile, *mid_tile, *right_tile;
-    pre_mid = pre_left = pre_right = topmost;
+    Tile *left_tile = nullptr, *mid_tile = nullptr, *right_tile = nullptr;
     
     for(auto s_t : space_tile)
     {
         mid_tile = s_t;
+        mid_tile->index = index;
         std::vector<Tile*> lnt = Layout::neighborFinding(mid_tile, orientation::Left); // left neighbors
         std::vector<Tile*> rnt = Layout::neighborFinding(mid_tile, orientation::Right); // right neighbors
         std::vector<Tile*> tnt = Layout::neighborFinding(mid_tile, orientation::Top); // Top neighbors
@@ -417,19 +428,22 @@ bool Layout::tileCreation(coordinate ul_coor, int desired_width, int desired_hei
 
 
         // Find your top tile
-        pre_left = pre_mid = pre_right;
-        while(!isNeighbor(orientation::Bottom, pre_left, left_tile) && pre_left->bl != nullptr) pre_left = pre_left->bl;
-        while(!isNeighbor(orientation::Bottom, pre_mid, mid_tile) && pre_mid->bl != nullptr) pre_mid = pre_mid->bl;
+        if(pre_right != nullptr)
+        {
+            pre_left = pre_mid = pre_right;
+            while(!isNeighbor(orientation::Bottom, pre_left, left_tile) && pre_left->bl != nullptr) pre_left = pre_left->bl;
+            while(!isNeighbor(orientation::Bottom, pre_mid, mid_tile) && pre_mid->bl != nullptr) pre_mid = pre_mid->bl;
+        }
 
         // check whether can merge itself top tile
-        if(pre_mid->width == mid_tile->width && pre_mid->ll_coor.x == mid_tile->ll_coor.x && (pre_mid->index < 0 && mid_tile->index < 0)) merge(this, pre_mid, mid_tile);
+        if(pre_mid != nullptr && pre_mid->width == mid_tile->width && pre_mid->ll_coor.x == mid_tile->ll_coor.x && (pre_mid->index == index && mid_tile->index == index)) merge(this, pre_mid, mid_tile);
         else 
         {
             mid_tile->rt = pre_mid;
             pre_mid = mid_tile;
         }
         if(mid_tile != left_tile){
-            if(pre_left->width == left_tile->width && pre_left->ll_coor.x == left_tile->ll_coor.x && (pre_left->index < 0 && left_tile->index < 0)) merge(this, pre_left, left_tile);
+            if(pre_left != nullptr && pre_left->width == left_tile->width && pre_left->ll_coor.x == left_tile->ll_coor.x && (pre_left->index < 0 && left_tile->index < 0)) merge(this, pre_left, left_tile);
             else // merge failed 
             {
                 left_tile->rt = pre_left;
@@ -439,7 +453,7 @@ bool Layout::tileCreation(coordinate ul_coor, int desired_width, int desired_hei
             pre_mid->bl = pre_left;
         }
         if(mid_tile != right_tile){
-            if(pre_right->width == right_tile->width && pre_right->ll_coor.x == right_tile->ll_coor.x && (pre_right->index < 0 && right_tile->index < 0)) merge(this, pre_right, right_tile);
+            if(pre_right != nullptr && pre_right->width == right_tile->width && pre_right->ll_coor.x == right_tile->ll_coor.x && (pre_right->index < 0 && right_tile->index < 0)) merge(this, pre_right, right_tile);
             else 
             {
                 right_tile->rt = pre_right;
@@ -474,45 +488,47 @@ bool Layout::tileCreation(coordinate ul_coor, int desired_width, int desired_hei
             // 把最底層的鄰居接到正確的位置
             Tile* tmp_p = bottommost;
             // bottommost
-            if(tmp_p == nullptr) // last_tile已經在整個layout最底部了
-            {
-                pre_left->lb = tmp_p;
-                pre_mid->lb = tmp_p;
-                pre_right->lb = tmp_p;
-            }
-            else
+            if(tmp_p != nullptr) // last_tile沒在layout最底部才需做
             {
                 if(isNeighbor(orientation::Top, tmp_p, pre_left)) pre_left->lb = tmp_p;
                 if(isNeighbor(orientation::Top, tmp_p, pre_mid)) pre_mid->lb = tmp_p;
                 if(isNeighbor(orientation::Top, tmp_p, pre_right)) pre_right->lb = tmp_p;
                 // traverse right
-                while(tmp_p->tr != nullptr && !(tmp_p->ll_coor.x > ul_coor.x + desired_width) ){ 
+                while(tmp_p->tr != nullptr && !(tmp_p->ll_coor.x >= ul_coor.x + desired_width)){ 
                     tmp_p = tmp_p->tr;
-                    if(pre_right->width == tmp_p->width && pre_right->ll_coor.x == tmp_p->ll_coor.x && (pre_right->index < 0 && tmp_p->index < 0)) 
+                    if(pre_right != nullptr)
                     {
-                        merge(this, pre_right, tmp_p);
+                        if(pre_right->width == tmp_p->width && pre_right->ll_coor.x == tmp_p->ll_coor.x && (pre_right->index < 0 && tmp_p->index < 0)) 
+                        {
+                            merge(this, pre_right, tmp_p);
+                        }
+                        else
+                        {
+                            if(isNeighbor(orientation::Top, tmp_p, pre_left)) pre_left->lb = tmp_p;
+                            if(isNeighbor(orientation::Top, tmp_p, pre_mid)) pre_mid->lb = tmp_p;
+                            if(isNeighbor(orientation::Top, tmp_p, pre_right)) pre_right->lb = tmp_p;
+                        }
                     }
-                    else
-                    {
-                        if(isNeighbor(orientation::Top, tmp_p, pre_left)) pre_left->lb = tmp_p;
-                        if(isNeighbor(orientation::Top, tmp_p, pre_mid)) pre_mid->lb = tmp_p;
-                        if(isNeighbor(orientation::Top, tmp_p, pre_right)) pre_right->lb = tmp_p;
-                    }
+                    
                 }
                 // traverse left
                 tmp_p = bottommost;
-                while(tmp_p->bl != nullptr && !(tmp_p->ll_coor.x + tmp_p->width < ul_coor.x)){ 
+                while(tmp_p->bl != nullptr && !(tmp_p->ll_coor.x + tmp_p->width <= ul_coor.x)){ 
                     tmp_p = tmp_p->bl;
-                    if(pre_left->width == tmp_p->width && pre_left->ll_coor.x == tmp_p->ll_coor.x && (pre_left->index < 0 && tmp_p->index < 0))
+                    if(pre_left != nullptr)
                     {
-                        merge(this, pre_left, tmp_p);
+                        if(pre_left->width == tmp_p->width && pre_left->ll_coor.x == tmp_p->ll_coor.x && (pre_left->index < 0 && tmp_p->index < 0))
+                        {
+                            merge(this, pre_left, tmp_p);
+                        }
+                        else
+                        {
+                            if(isNeighbor(orientation::Top, tmp_p, pre_left)) pre_left->lb = tmp_p;
+                            if(isNeighbor(orientation::Top, tmp_p, pre_mid)) pre_mid->lb = tmp_p;
+                            if(isNeighbor(orientation::Top, tmp_p, pre_right)) pre_right->lb = tmp_p;
+                        }
                     }
-                    else
-                    {
-                        if(isNeighbor(orientation::Top, tmp_p, pre_left)) pre_left->lb = tmp_p;
-                        if(isNeighbor(orientation::Top, tmp_p, pre_mid)) pre_mid->lb = tmp_p;
-                        if(isNeighbor(orientation::Top, tmp_p, pre_right)) pre_right->lb = tmp_p;
-                    }
+                    
                 }
             }
         }

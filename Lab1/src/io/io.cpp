@@ -37,9 +37,17 @@ void readCaseToLayout(Result &R, char const *file_path)
             else std::cout << "@" << token << " created failed!\n";
             R.all_block_tile_min_pq.push(stoi(token));
             R.tile_index2coor[stoi(token)] = tmp_coor;
+
+            // debug;
+            // auto d_v = L.directedAreaEnumeration({coordinate(0, L.height)}, L.width, L.height);
+            // for(auto i : d_v)
+            // {
+            //     i->printTile();
+            // }
+            R.all_tiles = L.directedAreaEnumeration({coordinate(0, L.height)}, L.width, L.height);
         }
-        R.all_tiles = L.directedAreaEnumeration({coordinate(0, L.height)}, L.width, L.height);
     }
+    R.all_tiles = L.directedAreaEnumeration({coordinate(0, L.height)}, L.width, L.height);
     
     R.L = L;
     return;
