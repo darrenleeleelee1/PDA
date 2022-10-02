@@ -18,7 +18,7 @@ struct Result
     std::vector<coordinate> point_finding_list;
     std::priority_queue<int, std::vector<int>, std::greater<int>> all_block_tile_min_pq;
     std::unordered_map<int, coordinate> tile_index2coor;
-    void Out(outputs o);
+    void Out(outputs o, char const *file_path);
     void Draw(char const *file_path);
 };
 

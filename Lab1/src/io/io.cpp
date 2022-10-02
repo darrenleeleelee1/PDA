@@ -37,14 +37,6 @@ void readCaseToLayout(Result &R, char const *file_path)
             else std::cout << "@" << token << " created failed!\n";
             R.all_block_tile_min_pq.push(stoi(token));
             R.tile_index2coor[stoi(token)] = tmp_coor;
-
-            // debug;
-            // auto d_v = L.directedAreaEnumeration({coordinate(0, L.height)}, L.width, L.height);
-            // for(auto i : d_v)
-            // {
-            //     i->printTile();
-            // }
-            R.all_tiles = L.directedAreaEnumeration({coordinate(0, L.height)}, L.width, L.height);
         }
     }
     R.all_tiles = L.directedAreaEnumeration({coordinate(0, L.height)}, L.width, L.height);
@@ -87,7 +79,7 @@ std::pair<int, int> calcNeighborSpaceOrBlock(Layout L, coordinate ll_core, int i
     }
     return std::make_pair(block, space);
 }
-void Result::Out(outputs o)
+void Result::Out(outputs o, char const *file_path)
 {
     int top, tmp_block, tmp_space;
     switch (o)
@@ -101,11 +93,19 @@ void Result::Out(outputs o)
             std::tie(tmp_block, tmp_space) = calcNeighborSpaceOrBlock(Result::L, Result::tile_index2coor[top], top);
             std::cout << top << " " << tmp_block << " " << tmp_space << std::endl;
         }
-        for(auto i :point_finding_list) std::cout << i.x << " " << i.y << std::endl;
+        for(auto i : point_finding_list) std::cout << i.x << " " << i.y << std::endl;
         break;
     case outputs::Files:
-        break;
-    default:
+        std::ofstream out_file(file_path, std::ofstream::trunc);
+        out_file << all_tiles.size() << std::endl;
+        while(!all_block_tile_min_pq.empty())
+        {
+            int top = all_block_tile_min_pq.top();
+            all_block_tile_min_pq.pop();
+            std::tie(tmp_block, tmp_space) = calcNeighborSpaceOrBlock(Result::L, Result::tile_index2coor[top], top);
+            out_file << top << " " << tmp_block << " " << tmp_space << std::endl;
+        }
+        for(auto i : point_finding_list) out_file << i.x << " " << i.y << std::endl;
         break;
     }
 }
