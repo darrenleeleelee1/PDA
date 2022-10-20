@@ -34,6 +34,24 @@
         "type_traits": "cpp",
         "utility": "cpp",
         "typeinfo": "cpp",
-        "cstring": "cpp"
+        "cstring": "cpp",
+        "csignal": "cpp",
+        "cstdarg": "cpp",
+        "cstddef": "cpp",
+        "atomic": "cpp",
+        "strstream": "cpp",
+        "cfenv": "cpp",
+        "chrono": "cpp",
+        "complex": "cpp",
+        "condition_variable": "cpp",
+        "list": "cpp",
+        "future": "cpp",
+        "iomanip": "cpp",
+        "mutex": "cpp",
+        "ratio": "cpp",
+        "system_error": "cpp",
+        "thread": "cpp",
+        "cinttypes": "cpp",
+        "typeindex": "cpp"
     }
 }
