@@ -1,0 +1,14 @@
+Outline: 50 50
+NumBlocks: 10
+NumTerminals: 0
+
+b1	1	1
+b2	2	2
+b3	3	3
+b4	4	4
+b5	2	2
+b6	5	4
+b7	8	9
+b8	7	8
+b9	3	3
+b10	2	7

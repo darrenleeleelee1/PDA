@@ -35,7 +35,7 @@ void io::readBlock(Layout &L, char* input_path)
             continue;
         }
         else if(tokens.size() == 3){
-            L.addBlock(tokens[0], stoi(tokens[1]), stoi(tokens[2]));
+            L.addBlock(this->SP, tokens[0], stoi(tokens[1]), stoi(tokens[2]));
         }
         else if(tokens.size() == 4){
             L.addTer(tokens[0], stoi(tokens[2]), stoi(tokens[3]));

@@ -10,10 +10,6 @@ int main(int argc, char** argv)
     io::readBlock(L, argv[2]);
     io::readNet(L, argv[3]);
 
-    // L.initLayout();
-    // L.B->printInfo();
-    // L.B->del(4);
-    // L.B->printInfo();
     L.SA();
     io::outMetric(L, argv[4], st);
     io::outDraw(L, argv[4]);
