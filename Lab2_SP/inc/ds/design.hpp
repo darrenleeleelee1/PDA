@@ -25,7 +25,6 @@ struct Block
 {
     std::string block_name;
     Border borders;
-    Coordinate ll_coor;
     Block(){}
     Block(std::string s, int w, int h) : block_name(s), borders(w, h){}
 };

@@ -9,10 +9,9 @@ int main(int argc, char** argv)
     Layout L(std::stod(argv[1]));
     io::readBlock(L, argv[2]);
     io::readNet(L, argv[3]);
-
+    L.initLayout();
     L.SA();
     io::outMetric(L, argv[4], st);
     io::outDraw(L, argv[4]);
-    
     return 0;
 }

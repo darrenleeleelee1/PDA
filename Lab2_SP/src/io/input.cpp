@@ -35,7 +35,7 @@ void io::readBlock(Layout &L, char* input_path)
             continue;
         }
         else if(tokens.size() == 3){
-            L.addBlock(this->SP, tokens[0], stoi(tokens[1]), stoi(tokens[2]));
+            L.addBlock(tokens[0], stoi(tokens[1]), stoi(tokens[2]));
         }
         else if(tokens.size() == 4){
             L.addTer(tokens[0], stoi(tokens[2]), stoi(tokens[3]));
@@ -68,30 +68,31 @@ void io::readNet(Layout &L, char* input_path)
 void io::outMetric(Layout &L, char* output_path, clock_t st)
 {
     std::ofstream fout(output_path, std::ofstream::trunc);
-    L.opt_B->calBlockCoor(&L);
-    fout << L.opt_B->countCost(&L, L.alpha) << std::endl;
-    fout << L.opt_B->countHPWL(&L) << std::endl;
+    fout << L.opt_sp->countCost(&L, L.alpha) << std::endl;
+    fout << L.opt_sp->countHPWL(&L) << std::endl;
     fout << L.chip_width * L.chip_height << std::endl;
     fout << L.chip_width << " " << L.chip_height << std::endl;
     clock_t et = std::clock();
     fout << ((et - st) / CLOCKS_PER_SEC) << std::endl;
     for(int i = 0; i < L.num_blocks; i++){
-        fout << L.blocklist[i].block_name << " " << L.opt_B->ll_coor[i].x << " " << L.opt_B->ll_coor[i].y << " ";
-        fout << L.opt_B->ll_coor[i].x + L.opt_B->borders[i].width << " " << L.opt_B->ll_coor[i].y + L.opt_B->borders[i].height << std::endl;
+        fout << L.opt_sp->blocklist[i].block_name << " " << L.opt_sp->P[i].x << " " << L.opt_sp->P[i].y << " ";
+        fout << L.opt_sp->P[i].x + L.opt_sp->blocklist[i].borders.width << " " << L.opt_sp->P[i].y + L.opt_sp->blocklist[i].borders.height << std::endl;
     }
 }
 void io::outDraw(Layout &L, char* output_path)
 {
+    char null[100] = {'\0'};
     char real_path[100];
-    char* draw_dir  = (char*)"./drawing/";
-    std::strcat(real_path, draw_dir);
+    std::strcpy(real_path, null);
+    std::string draw_dir  = "./drawing/";
+    std::strcat(real_path, draw_dir.c_str());
     std::strcat(real_path, output_path);
     std::ofstream fout(real_path, std::ofstream::trunc);
+    if(fout.fail()) std::cout << "file create error." << std::endl;
     fout << L.num_blocks << std::endl;
     fout << L.width << " " << L.height << std::endl;
     for(int i = 0; i < L.num_blocks; i++){
-        fout << L.blocklist[i].block_name << " ";
-        fout << L.opt_B->ll_coor[i].x << " " << L.opt_B->ll_coor[i].y << " ";
-        fout << L.opt_B->borders[i].width << " " << L.opt_B->borders[i].height << std::endl;
+        fout << L.opt_sp->blocklist[i].block_name << " " << L.opt_sp->P[i].x << " " << L.opt_sp->P[i].y << " ";
+        fout << L.opt_sp->blocklist[i].borders.width << " " << L.opt_sp->blocklist[i].borders.height << std::endl;
     }
 }

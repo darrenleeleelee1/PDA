@@ -46,7 +46,7 @@ void B_star::initBstar(Layout* L)
     printInfo();
 }
 int B_star::countArea(int& chip_width, int& chip_height){
-    int llx = INT8_MAX, lly = INT8_MAX, urx = INT8_MIN, ury = INT8_MIN;
+    int llx = INT32_MAX, lly = INT32_MAX, urx = INT32_MIN, ury = INT32_MIN;
     for(int i = 0; i < nodes; i++){
         llx = std::min(llx, this->ll_coor[i].x);
         lly = std::min(lly, this->ll_coor[i].y);
@@ -60,7 +60,7 @@ int B_star::countArea(int& chip_width, int& chip_height){
 int B_star::countHPWL(Layout* L){
     int totalHPWL = 0;
     for(auto n : L->netlist){
-        int llx = INT8_MAX, lly = INT8_MAX, urx = INT8_MIN, ury = INT8_MIN;
+        int llx = INT32_MAX, lly = INT32_MAX, urx = INT32_MIN, ury = INT32_MIN;
         for(auto ns : n.net_names){
             int idx;
             if(L->net_name2id.count(ns)){

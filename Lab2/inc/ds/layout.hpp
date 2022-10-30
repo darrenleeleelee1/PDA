@@ -49,7 +49,7 @@ struct Layout
     double alpha;
     int opt_area = 0;
     int opt_hpwl = 0;
-    int opt_cost = INT8_MAX;
+    int opt_cost = INT32_MAX;
     std::vector<Net> netlist;
     std::vector<Block> blocklist;
     std::vector<Terminal> terlist;

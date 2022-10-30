@@ -1,5 +1,5 @@
 CXXPROC = g++
-CPPFLAGS = -g -O0 -std=c++17
+CPPFLAGS = -g -O3 -std=c++17
 INCLUDE = -I ./inc
 
 PROG_FILES_TO_LINK = main.o src/io/input.o src/ds/layout.o
