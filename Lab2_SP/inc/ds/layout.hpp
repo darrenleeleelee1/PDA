@@ -9,17 +9,17 @@ struct Layout
     int width, height, num_blocks, num_ters, num_nets;
     int chip_width, chip_height;
     double alpha;
-    int opt_area;
-    int opt_hpwl;
-    int opt_cost;
+    int64_t opt_area;
+    int64_t opt_hpwl;
+    int64_t opt_cost;
     std::vector<Net> netlist;
     std::vector<Block> blocklist;
     std::vector<Terminal> terlist;
     std::unordered_map<std::string, int> net_name2id;
     std::unordered_map<std::string, int> ter_name2id;
     
-    SP* sp;
-    SP* opt_sp;
+    SP* sp = nullptr;
+    SP* opt_sp = nullptr;
     Layout(){
         this->blocklist.resize(0);
         this->terlist.resize(0);
@@ -33,7 +33,7 @@ struct Layout
     void initLayout();
     void addBlock(std::string s, int w, int h);
     void addTer(std::string s, int a, int b);
-    void SA();
+    void SA(double T, double T_frozen, double r, int k, int num_look_nei, double alpha_ratio);
 };
 struct SP
 {
@@ -67,8 +67,8 @@ struct SP
     void posMWCS();
     void negMWCS();
     void MWCS();
-    int countArea(int &chip_width, int &chip_height);
-    int countHPWL(Layout *layout);
-    int countCost(Layout *layout, double alpha_ratio);
+    int64_t countArea(int &chip_width, int &chip_height);
+    int64_t countHPWL(Layout *layout);
+    int64_t countCost(Layout *layout, double alpha_ratio,  bool add_penalty);
 };
 

@@ -68,7 +68,7 @@ void io::readNet(Layout &L, char* input_path)
 void io::outMetric(Layout &L, char* output_path, clock_t st)
 {
     std::ofstream fout(output_path, std::ofstream::trunc);
-    fout << L.opt_sp->countCost(&L, L.alpha) << std::endl;
+    fout << L.opt_sp->countCost(&L, L.alpha, false) << std::endl;
     fout << L.opt_sp->countHPWL(&L) << std::endl;
     fout << L.chip_width * L.chip_height << std::endl;
     fout << L.chip_width << " " << L.chip_height << std::endl;
