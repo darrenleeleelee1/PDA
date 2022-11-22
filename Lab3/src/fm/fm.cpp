@@ -1,4 +1,3 @@
-#include <algorithm>
 #include "ds/layout.hpp"
 #include "fm/fm.hpp"
 int FM::overlap(Cell* a, Cell* b)
@@ -18,7 +17,7 @@ int FM::overlap(Cell* a, Cell* b)
 }
 void FM::initGraph()
 {
-    std::sort(this->L->celllist.begin(), this->L->celllist.end(), [](Cell* a, Cell* b) -> bool {return a->ll_coor.x < b->ll_coor.x;});
+    
     this->adj.resize(this->L->num_of_cell);
     for(int i = 0; i < this->L->num_of_cell; i++){
         for(int j = i + 1; j < this->L->num_of_cell; j++){

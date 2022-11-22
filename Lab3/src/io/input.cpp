@@ -33,7 +33,7 @@ void io::readLayout(Layout &L, char* file_path)
             for(int i = 0; i < L.num_of_ter; i++){
                 getline(in_file, line);
                 tokenLine(tokens, line);
-                L.addTerminal(tokens[0], {Coordinate(stoi(tokens[1]), stoi(tokens[2]))}, stoi(tokens[3]), stoi(tokens[4]));
+                L.addTerminal(std::stoi(tokens[0].substr(1, tokens[0].size())), {Coordinate(stoi(tokens[1]), stoi(tokens[2]))}, stoi(tokens[3]), stoi(tokens[4]));
             }
         }
         if(tokens[0] == "NumCell"){
@@ -41,7 +41,7 @@ void io::readLayout(Layout &L, char* file_path)
             for(int i = 0; i < L.num_of_cell; i++){
                 getline(in_file, line);
                 tokenLine(tokens, line);
-                L.addCell(tokens[0], {Coordinate(stoi(tokens[1]), stoi(tokens[2]))}, stoi(tokens[3]), stoi(tokens[4]), i % 2);
+                L.addCell(std::stoi(tokens[0].substr(1, tokens[0].size())), {Coordinate(stoi(tokens[1]), stoi(tokens[2]))}, stoi(tokens[3]), stoi(tokens[4]), i % 2);
             }
         }
     }
@@ -50,7 +50,7 @@ void io::writeLayout(Layout &L, char* file_path)
 {
     std::ofstream out_file(file_path, std::ofstream::trunc);
     for(int i = 0; i < L.num_of_cell; i++){
-        out_file << L.celllist[i]->name << " " << L.celllist[i]->ll_coor.x << " " << L.celllist[i]->ll_coor.y;
+        out_file << "C" << L.celllist[i]->name << " " << L.celllist[i]->ll_coor.x << " " << L.celllist[i]->ll_coor.y;
         out_file << " " << L.celllist[i]->is_top << std::endl;
     }
 }
