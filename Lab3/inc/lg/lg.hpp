@@ -34,9 +34,10 @@ struct Abacus
     int findRow(Cell* c); // return this cell should be on which row by the gp result
     void pushRowCell(int idx, int r); // r means add to which row
     void popRowCell(int r); // r means add to which row
+    Cluster* rowClusterPredecessor(std::vector<Cluster*> &r_ptr);
     void addCell(Cluster* c, int i);
     void addCluster(Cluster* c_prime, Cluster* c);
-    void Collapse(std::vector<Cluster*> &r_ptr, Cluster* c);
+    void collapse(std::vector<Cluster*> &r_ptr, Cluster* c);
     int placeRow(int r, std::vector<Cluster*> &r_ptr); // return offset cost
     void storeLegalization(int r);
     void main();

@@ -5,7 +5,7 @@ python3 draw.py [INPUT] [OUTPUT] [PICTURE_NAME] (-i) (-p)
 
 
 ex:
-python3 draw.py testcase/case0.txt output.txt drawing/layout0
-python3 draw.py testcase/case0.txt output.txt drawing/layout0 -i
-python3 draw.py testcase/case0.txt output.txt drawing/layout0 -i -p
-python3 draw.py testcase/case0.txt output.txt drawing/layout0 -p
+python3 draw.py testcase/case0.txt out/case0.txt drawing/case0/layout0
+python3 draw.py testcase/case0.txt out/case0.txt drawing/case0/layout0 -i
+python3 draw.py testcase/case0.txt out/case0.txt drawing/case0/layout0 -i -p
+python3 draw.py testcase/case0.txt out/case0.txt drawing/case0/layout0 -p

@@ -7,19 +7,11 @@ void Abacus::main()
     
     for(int i = 0; i < this->L->num_of_cell; i++){ // i : Cell
         c_best = INT32_MAX; r_best = -1;
-        std::cout << "C" << this->L->celllist[i]->name << " start.\n";
+        if(this->L->celllist[i]->name == 8) {
+            c_best = INT32_MAX;
+        }
         cell_gp_row_idx = this->findRow(this->L->celllist[i]);
-        /* 
-        TODO:
-            Insert cell i into row r
-            PlaceRow r (trial)
-            Determine cost c
-                if row last cluster's x_opt + cell i's width > chip width, then c = INT32_MAX
-            if c < c_best then c_best = c, r_best = r
-            Remove cell i from row r
-
-            if c > c_best break;
-        */
+        std::cout << "C" << this->L->celllist[i]->name << " start!\n";
         // go up first
         for(int r = cell_gp_row_idx; r < this->L->num_of_row; r++){
             
@@ -49,12 +41,8 @@ void Abacus::main()
 
             if(c > c_best) break;
         }
-        /*
-        TODO:
-            Insert Cell i rto row r_best
-            PlaceRow r_best(final)
-        */
-        std::cout << "C" << this->L->celllist[i]->name << " place at " << r_best << std::endl;
+        
+        std::cout << "C" << this->L->celllist[i]->name << " place at row " << r_best << std::endl;
         this->pushRowCell(i, r_best);
     }
     for(int i = 0; i < this->L->num_of_row; i++){

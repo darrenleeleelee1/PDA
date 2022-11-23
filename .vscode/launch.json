@@ -9,7 +9,7 @@
         "type": "cppdbg",
         "request": "launch",
         "program": "${workspaceFolder}/Lab3/Lab3",
-        "args": ["./testcase/case0.txt", "./out/case0.txt"],
+        "args": ["./testcase/case2.txt", "./out/case2.txt"],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}/Lab3/",
         "environment": [],

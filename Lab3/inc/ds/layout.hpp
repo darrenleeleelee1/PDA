@@ -49,6 +49,7 @@ public:
     std::vector<Cell*> celllist;
     std::vector<Terminal*> terlist;
     std::vector<Cell*> gp_result;
+    Layout(){}
     void addTerminal(int n, Coordinate c, int w, int h){
         Terminal* t = new Terminal(n, c, w, h);
         this->terlist.push_back(t);
@@ -58,4 +59,6 @@ public:
         this->celllist.push_back(t_c);
         this->gp_result.push_back(t_c);
     }
+    void split(Layout &top, Layout &bot);
+    void merge(Layout &top, Layout &bot);
 };
