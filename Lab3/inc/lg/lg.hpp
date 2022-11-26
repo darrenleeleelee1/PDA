@@ -55,5 +55,5 @@ struct Abacus
     void collapse(std::vector<Cluster*> &r_ptr, Cluster* c, int left_bry, int right_bry);
     int placeRow(int r, int sr, std::vector<Cluster*> &r_ptr); // return offset cost
     void storeLegalization(int r, int sr);
-    void main();
+    int main();
 };
