@@ -4,30 +4,54 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-    {
-        "name": "(gdb) Lab3",
-        "type": "cppdbg",
-        "request": "launch",
-        "program": "${workspaceFolder}/Lab3/Lab3",
-        "args": ["./testcase/case2.txt", "./out/case2.txt"],
-        "stopAtEntry": false,
-        "cwd": "${workspaceFolder}/Lab3/",
-        "environment": [],
-        "externalConsole": false,
-        "MIMode": "gdb",
-        "preLaunchTask": "build",
-        "setupCommands": [
-            {
-                "description": "Enable pretty-printing for gdb",
-                "text": "-enable-pretty-printing",
-                "ignoreFailures": true
-            },
-            {
-                "description":  "Set Disassembly Flavor to Intel",
-                "text": "-gdb-set disassembly-flavor intel",
-                "ignoreFailures": true
-            }
-        ]
-    }
+        {
+            "name": "(gdb) verifier",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Lab3/verifier",
+            "args": ["./testcase/case3.txt", "./out/case3.txt"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/Lab3/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "(gdb) Lab3",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Lab3/Lab3",
+            "args": ["./testcase/case3.txt", "./out/case3.txt"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/Lab3/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "build",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        }
     ]
 }

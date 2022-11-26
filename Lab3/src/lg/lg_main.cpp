@@ -2,53 +2,62 @@
 
 void Abacus::main()
 {
-    int c_best, c, r_best;
+    this->splitRow();
+    int c_best, c, r_best, sr_best;
     int cell_gp_row_idx; // gp result that cell at which row
     
     for(int i = 0; i < this->L->num_of_cell; i++){ // i : Cell
-        c_best = INT32_MAX; r_best = -1;
-        if(this->L->celllist[i]->name == 8) {
-            c_best = INT32_MAX;
-        }
+        c_best = INT32_MAX; r_best = -1; sr_best = -1;
         cell_gp_row_idx = this->findRow(this->L->celllist[i]);
         std::cout << "C" << this->L->celllist[i]->name << " start!\n";
         // go up first
         for(int r = cell_gp_row_idx; r < this->L->num_of_row; r++){
-            
-            std::vector<Cluster*> trial;
+            for(int sr = 0; sr < this->num_of_sub_row[r]; sr++){
+                std::vector<Cluster*> trial;
 
-            this->pushRowCell(i, r);
-            c = this->placeRow(r, trial);
-            if(c < c_best){
-                c_best = c;
-                r_best = r;
+                this->pushRowCell(i, r, sr);
+                c = this->placeRow(r, sr, trial);
+                if(c < c_best){
+                    c_best = c;
+                    r_best = r;
+                    sr_best = sr;
+                }
+                this->popRowCell(r, sr);
+
             }
-            this->popRowCell(r);
-
-            if(c > c_best) break;
+            // if(c > c_best) break;
         }
         // then go down
         for(int r = cell_gp_row_idx - 1; r >= 0; r--){
-            std::vector<Cluster*> trial;
+            for(int sr = 0; sr < this->num_of_sub_row[r]; sr++){
+                std::vector<Cluster*> trial;
 
-            this->pushRowCell(i, r);
-            c = this->placeRow(r, trial);
-            if(c < c_best){
-                c_best = c;
-                r_best = r;
+                this->pushRowCell(i, r, sr);
+                c = this->placeRow(r, sr, trial);
+                if(c < c_best){
+                    c_best = c;
+                    r_best = r;
+                    sr_best = sr;
+                }
+                this->popRowCell(r, sr);
+
             }
-            this->popRowCell(r);
-
-            if(c > c_best) break;
+            // if(c > c_best) break;
         }
         
         std::cout << "C" << this->L->celllist[i]->name << " place at row " << r_best << std::endl;
-        this->pushRowCell(i, r_best);
+        
+        this->pushRowCell(i, r_best, sr_best);
+    }
+
+    for(int i = 0; i < this->L->num_of_row; i++){
+        for(int j = 0; j < this->row_cells[i].size(); j++){
+            if(this->row_cells[i][j].size() > 0) c = this->placeRow(i, j, this->row_clusters[i][j]);
+        }
     }
     for(int i = 0; i < this->L->num_of_row; i++){
-        if(row_cells[i].size() > 0) c = this->placeRow(i, this->row_clusters[i]);
-    }
-    for(int i = 0; i < this->L->num_of_row; i++){
-        this->storeLegalization(i);
+        for(int j = 0; j < this->row_cells[i].size(); j++){
+            this->storeLegalization(i, j);
+        }
     }
 }
