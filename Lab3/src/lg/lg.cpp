@@ -11,7 +11,8 @@ void Abacus::splitRow()
         this->row_cells[i].resize(this->num_of_sub_row[i]);
         this->row_clusters[i].resize(this->num_of_sub_row[i]);
         this->subrow_drc[i].resize(this->num_of_sub_row[i]);
-        this->subrow_drc[i][0] = new Subrow(0, this->L->width);
+        this->subrow_drc[i][0] = new Subrow(0, (this->L->width / 2) );
+        this->subrow_drc[i][1] = new Subrow((this->L->width / 2) , this->L->width);
     }
 }
 
@@ -93,8 +94,9 @@ int Abacus::placeRow(int r, int sr, std::vector<Cluster*> &r_ptr)
         }
         else{
             this->addCell(c, i);
-            this->collapse(r_ptr, c, this->subrow_drc[r][sr]->x_left_bry, this->subrow_drc[r][sr]->x_right_bry);
+            
         }
+        this->collapse(r_ptr, c, this->subrow_drc[r][sr]->x_left_bry, this->subrow_drc[r][sr]->x_right_bry);
         c = r_ptr.back();
         if(c->x_opt < this->subrow_drc[r][sr]->x_left_bry || c->x_opt + c->w > this->subrow_drc[r][sr]->x_right_bry) return INT32_MAX;
     }

@@ -1,4 +1,4 @@
-DieSize 30 30
+DieSize 40 40
 DieRows 10 3
 Terminal 0
 NumCell 11

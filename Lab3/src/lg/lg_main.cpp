@@ -25,7 +25,7 @@ void Abacus::main()
                 this->popRowCell(r, sr);
 
             }
-            // if(c > c_best) break;
+            if(c > c_best) break;
         }
         // then go down
         for(int r = cell_gp_row_idx - 1; r >= 0; r--){
@@ -42,10 +42,10 @@ void Abacus::main()
                 this->popRowCell(r, sr);
 
             }
-            // if(c > c_best) break;
+            if(c > c_best) break;
         }
         
-        std::cout << "C" << this->L->celllist[i]->name << " place at row " << r_best << std::endl;
+        std::cout << "C" << this->L->celllist[i]->name << " place at row " << r_best << " sub_row " << sr_best << std::endl;
         
         this->pushRowCell(i, r_best, sr_best);
     }
