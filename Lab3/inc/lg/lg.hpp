@@ -38,7 +38,12 @@ struct Abacus
         this->row_clusters.resize(this->L->num_of_row);
         this->row_cells.resize(this->L->num_of_row);
         this->subrow_drc.resize(this->L->num_of_row);
-        this->num_of_sub_row.resize(this->L->num_of_row, 2);
+        this->num_of_sub_row.resize(this->L->num_of_row, 1);
+        for(int i = 0; i < this->L->num_of_row; i++){
+            this->subrow_drc[i].resize(this->num_of_sub_row[i]);
+            this->subrow_drc[i][0] = new Subrow(0, this->L->width);
+        }
+        
     }
     void splitRow();
     int findRow(Cell* c); // return this cell should be on which row by the gp result

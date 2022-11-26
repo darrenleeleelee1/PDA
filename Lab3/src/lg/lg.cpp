@@ -3,16 +3,58 @@
 #include <algorithm>
 void Abacus::splitRow()
 {
+    
     for(auto t : this->L->terlist){
         int bottommost_row = t->ll_coor.y / this->L->row_hei;
-        int topmost_row = (t->ll_coor.y + t->height) / this->L->row_hei;
+        int topmost_row = (t->ll_coor.y + t->height - 1) / this->L->row_hei;
+        for(int r = bottommost_row; r <= topmost_row; r++){
+            for(int sr = 0; sr < this->num_of_sub_row[r]; sr++){
+                auto &sdrc = this->subrow_drc[r];
+                if(t->ll_coor.x >= sdrc[sr]->x_left_bry && t->ll_coor.x < sdrc[sr]->x_right_bry){
+                    int add = 0;
+                    if(t->ll_coor.x + t->width < sdrc[sr]->x_right_bry){
+                        sdrc.insert(sdrc.begin() + sr + 1, new Subrow(t->ll_coor.x + t->width, sdrc[sr]->x_right_bry));
+                        add++;
+                        this->num_of_sub_row[r]++;
+                    }
+                    if(t->ll_coor.x <= sdrc[sr]->x_left_bry) {
+                        sdrc.erase(sdrc.begin() + sr);
+                        add--;
+                        this->num_of_sub_row[r]--;
+                    }
+                    else sdrc[sr]->x_right_bry = t->ll_coor.x;
+                    sr += add;
+                }
+                else if(t->ll_coor.x + t->width > sdrc[sr]->x_left_bry && t->ll_coor.x + t->width <= sdrc[sr]->x_right_bry){
+                    int add = 0;
+                    if(t->ll_coor.x + t->width < sdrc[sr]->x_right_bry){
+                        sdrc.insert(sdrc.begin() + sr + 1, new Subrow(t->ll_coor.x + t->width, sdrc[sr]->x_right_bry));
+                        add++;
+                        this->num_of_sub_row[r]++;
+                    }
+                    if(t->ll_coor.x <= sdrc[sr]->x_right_bry) {
+                        sdrc.erase(sdrc.begin() + sr);
+                        add--;
+                        this->num_of_sub_row[r]--;
+                    }
+                    else sdrc[sr]->x_left_bry = t->ll_coor.x + t->width;
+                    sr += add;
+                }
+                else if(t->ll_coor.x <= sdrc[sr]->x_left_bry && t->ll_coor.x + t->width >= sdrc[sr]->x_right_bry){
+                    sdrc.erase(sdrc.begin() + sr);
+                    this->num_of_sub_row[r]--;
+                    sr--;
+                }
+                
+            }
+        }
     }
+
+    
+        
     for(int i = 0; i < this->L->num_of_row; i++){
         this->row_cells[i].resize(this->num_of_sub_row[i]);
         this->row_clusters[i].resize(this->num_of_sub_row[i]);
-        this->subrow_drc[i].resize(this->num_of_sub_row[i]);
-        this->subrow_drc[i][0] = new Subrow(0, (this->L->width / 2) );
-        this->subrow_drc[i][1] = new Subrow((this->L->width / 2) , this->L->width);
     }
 }
 

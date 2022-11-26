@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     // sort cells by their x coordinate for FM partition and Abacus ligalization
     std::sort(L.celllist.begin(), L.celllist.end(), [](Cell *a, Cell *b) -> bool {return a->ll_coor.x < b->ll_coor.x;});
     std::sort(L.gp_result.begin(), L.gp_result.end(), [](Cell *a, Cell *b) -> bool {return a->ll_coor.x < b->ll_coor.x;});
-    std::sort(L.terlist.begin(), L.terlist.end(), [](Terminal *a, Terminal *b) -> bool {return a->ll_coor.x < b->ll_coor.x;});
+    // std::sort(L.terlist.begin(), L.terlist.end(), [](Terminal *a, Terminal *b) -> bool {return a->ll_coor.x < b->ll_coor.x;});
     FM fm(&L);
     fm.main();
 
