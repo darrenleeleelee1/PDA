@@ -77,6 +77,29 @@ void FM::partition()
             int base_gain = cell2gain[base_idx], nei_gain;
             bool base = this->L->celllist[base_idx]->is_top, nei;
             
+            // balancing
+            if(base){
+                int tmp_num_top = this->num_top_cell - 1;
+                int tmp_num_bot = this->num_bot_cell + 1;
+                if(tmp_num_top < this->balance_factor *  (tmp_num_top + tmp_num_bot) - 1) continue;
+                else if(tmp_num_top > this->balance_factor *  (tmp_num_top + tmp_num_bot) + 1) continue;
+                else{
+                    this->num_top_cell = tmp_num_top;
+                    this->num_bot_cell = tmp_num_bot;
+                }
+            }
+            else{
+                int tmp_num_top = this->num_top_cell + 1;
+                int tmp_num_bot = this->num_bot_cell - 1;
+                if(tmp_num_top < this->balance_factor *  (tmp_num_top + tmp_num_bot) - 1) continue;
+                else if(tmp_num_top > this->balance_factor *  (tmp_num_top + tmp_num_bot) + 1) continue;
+                else{
+                    this->num_top_cell = tmp_num_top;
+                    this->num_bot_cell = tmp_num_bot;
+                }
+            }
+            // balancing
+            
             // update neightbor
             for(auto &nei_cell : this->adj[base_idx]){
                 nei_idx = nei_cell.first;

@@ -38,6 +38,9 @@ public:
     Cell() : Block() {}
     Cell(int n, Coordinate c, int w, int h, bool t) : Block(n, c, w, h), is_top(t) {}
     void printBlock();
+    int getArea(){
+        return this->width * this->height;
+    }
 };
 
 class Layout
