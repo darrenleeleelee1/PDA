@@ -142,7 +142,7 @@ int Abacus::placeRow(int r, int sr, std::vector<Cluster*> &r_ptr)
         if(c->x_opt < this->subrow_drc[r][sr]->x_left_bry || c->x_opt + c->w > this->subrow_drc[r][sr]->x_right_bry) return INT32_MAX;
     }
     int cell_idx = this->row_cells[r][sr].back();
-    int x_offset = std::abs(c->x_opt + c->w - this->L->gp_result[cell_idx]->ll_coor.x);
+    int x_offset = std::abs(c->x_opt + c->w -  this->L->gp_result[cell_idx]->width - this->L->gp_result[cell_idx]->ll_coor.x);
     int y_offset = std::abs(r * this->L->row_hei - this->L->gp_result[cell_idx]->ll_coor.y);
     return x_offset + y_offset;
 }
