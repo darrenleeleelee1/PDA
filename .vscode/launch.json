@@ -20,7 +20,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/Lab3/Lab3",
-            "args": ["./testcase/case1.txt", "./out/case1.txt"],
+            "args": ["./testcase/case3.txt", "./out/case3.txt"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/Lab3/",
             "preLaunchTask": "build",
