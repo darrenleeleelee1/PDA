@@ -1,9 +1,9 @@
 CXXPROC = g++
-CPPFLAGS = -g -O0 -std=c++17
-INCLUDE = -I ./inc
+CPPFLAGS = -g -O3 -std=c++17 -pthread
+INCLUDE = -I ./inc 
 
 FM_TO_LINK = src/fm/fm.o src/fm/fm_main.o
-DS_TO_LINK = src/ds/layout.o
+DS_TO_LINK = src/ds/layout.o src/ds/concurrent.o
 LG_TO_LINK = src/lg/lg.o src/lg/lg_main.o
 INPUT_TO_LINK = src/io/input.o
 

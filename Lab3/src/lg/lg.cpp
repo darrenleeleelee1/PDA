@@ -136,7 +136,6 @@ int Abacus::placeRow(int r, int sr, std::vector<Cluster*> &r_ptr)
         }
         else{
             this->addCell(c, i);
-            
         }
         this->collapse(r_ptr, c, this->subrow_drc[r][sr]->x_left_bry, this->subrow_drc[r][sr]->x_right_bry);
         c = r_ptr.back();

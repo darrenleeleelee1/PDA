@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/Lab3/verifier",
-            "args": ["./testcase/case0.txt", "./out/case0.txt"],
+            "args": ["./testcase/case1.txt", "./out/case1.txt"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/Lab3/",
             "environment": [],

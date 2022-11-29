@@ -37,6 +37,13 @@ void FM::initGain()
     for(int i = 0; i < this->L->num_of_cell; i++){
         tmp_g = 0;
         base = this->L->celllist[i]->is_top;
+        // count for balancing
+        if(base) this->bal_top_cell += 1;
+        else this->bal_bot_cell += 1;
+        if(this->largest_Cell == nullptr || this->L->celllist[i]->getArea() > this->largest_Cell->getArea()){
+            this->largest_Cell = this->L->celllist[i];
+        }
+        // count for balancing
         for(auto j : this->adj[i]){
             int nei_idx = j.first, nei_cost = j.second;
             nei = this->L->celllist[nei_idx]->is_top;
@@ -77,6 +84,27 @@ void FM::partition()
             int base_gain = cell2gain[base_idx], nei_gain;
             bool base = this->L->celllist[base_idx]->is_top, nei;
             
+            // balancing
+            if(base){
+                int tmp_num_top = this->bal_top_cell - 1;
+                int tmp_num_bot = this->bal_bot_cell + 1;
+                if((double)tmp_num_bot > this->balance_factor * (tmp_num_top + tmp_num_bot) + 1) continue;
+                else{
+                    this->bal_top_cell = tmp_num_top;
+                    this->bal_bot_cell = tmp_num_bot;
+                }
+            }
+            else{
+                int tmp_num_top = this->bal_top_cell + 1;
+                int tmp_num_bot = this->bal_bot_cell - 1;
+                if((double)tmp_num_top > this->balance_factor * (tmp_num_top + tmp_num_bot) + 1) continue;
+                else{
+                    this->bal_top_cell = tmp_num_top;
+                    this->bal_bot_cell = tmp_num_bot;
+                }
+            }
+            // balancing
+            
             // update neightbor
             for(auto &nei_cell : this->adj[base_idx]){
                 nei_idx = nei_cell.first;
@@ -105,7 +133,7 @@ void FM::partition()
             cost += base_gain;
             locklist.insert(base_idx);
 
-            if(cost < opt_cost){
+            if(cost < opt_cost || (cost == opt_cost && ((double)std::max(this->bal_top_cell, this->bal_bot_cell) / (this->bal_top_cell + this->bal_bot_cell)) <= this->balance_factor)){
                 opt_cost = cost;
                 FM::storePartition(); 
             }

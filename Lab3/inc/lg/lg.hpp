@@ -29,12 +29,14 @@ struct Cluster
 struct Abacus
 {
     Layout *L;
+    bool ok;
     std::vector<std::vector<std::vector<Cluster*>>> row_clusters; // row_clusters[main row][sub_row]
     std::vector<std::vector<std::vector<int>>> row_cells; // row_cells[main row][sub_row]
     std::vector<std::vector<Subrow*>> subrow_drc; // sub row constraint, subrow_drc[main row][sub_row]
     std::vector<int> num_of_sub_row; // num of sub row at i, sub_row[i]
     Abacus(){}
     Abacus(Layout *_L) : L(_L) {
+        this->ok = false;
         this->row_clusters.resize(this->L->num_of_row);
         this->row_cells.resize(this->L->num_of_row);
         this->subrow_drc.resize(this->L->num_of_row);
@@ -55,5 +57,5 @@ struct Abacus
     void collapse(std::vector<Cluster*> &r_ptr, Cluster* c, int left_bry, int right_bry);
     int placeRow(int r, int sr, std::vector<Cluster*> &r_ptr); // return offset cost
     void storeLegalization(int r, int sr);
-    int main();
+    void main();
 };

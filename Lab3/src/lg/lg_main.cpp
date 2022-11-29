@@ -1,6 +1,6 @@
 #include "lg/lg.hpp"
 
-int Abacus::main()
+void Abacus::main()
 {
     this->splitRow();
     int c_best, c, r_best, sr_best;
@@ -46,7 +46,8 @@ int Abacus::main()
         
         if(r_best == -1 || sr_best == -1){
             std::cout << "C" << this->L->celllist[i]->name << " can't place at any row.\n";
-            return -1;
+            this->ok = false;
+            return;
         }
         this->pushRowCell(i, r_best, sr_best);
     }
@@ -62,5 +63,6 @@ int Abacus::main()
         }
     }
 
-    return 0;
+    this->ok = true;
+    return;
 }
