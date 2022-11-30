@@ -24,7 +24,7 @@ void Abacus::main()
                 this->popRowCell(r, sr);
 
             }
-            // if(c > c_best) break;
+            if((r - cell_gp_row_idx) * this->L->row_hei > c_best) break;
         }
         // then go down
         for(int r = cell_gp_row_idx - 1; r >= 0; r--){
@@ -41,7 +41,7 @@ void Abacus::main()
                 this->popRowCell(r, sr);
 
             }
-            // if(c > c_best) break;
+            if((cell_gp_row_idx - r) * this->L->row_hei > c_best) break;
         }
         
         if(r_best == -1 || sr_best == -1){
