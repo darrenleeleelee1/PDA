@@ -5,7 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(gdb) verifier",
+            "name": "(gdb) Lab4",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Lab4/Lab4",
+            "args": ["./case/case1.txt", "./out/case1.txt"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/Lab4/",
+            "preLaunchTask": "build Lab4",
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+        },
+        {
+            "name": "(gdb) Lab3 verifier",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/Lab3/verifier",
@@ -23,7 +41,7 @@
             "args": ["./testcase/case3.txt", "./out/case3.txt"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/Lab3/",
-            "preLaunchTask": "build",
+            "preLaunchTask": "build Lab3",
             "MIMode": "gdb",
             "setupCommands": [
                 {
@@ -32,6 +50,6 @@
                     "ignoreFailures": true
                 }
             ],
-        }
+        },
     ]
 }

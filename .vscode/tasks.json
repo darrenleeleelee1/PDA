@@ -4,9 +4,30 @@
     "version": "2.0.0",
     "tasks": [
       {
-        "label": "build",
+        "label": "build Lab3",
         "type": "shell",
-        "command": "cd ${workspaceFolder}/Lab3;make -j8", 
+        "command": "cd ${cwd}/Lab3 && make -j8", 
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": {
+          "owner": "cpp",
+          "fileLocation": ["relative", "${workspaceFolder}"],
+          "pattern": {
+            "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "severity": 4,
+            "message": 5
+          }
+        }
+      },
+      {
+        "label": "build Lab4",
+        "type": "shell",
+        "command": "cd ${cwd}/Lab4 && make -j8", 
         "group": {
           "kind": "build",
           "isDefault": true
@@ -24,5 +45,6 @@
           }
         }
       }
-    ]
+    ],
+    
   }
