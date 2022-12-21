@@ -12,6 +12,11 @@ struct Segments{
     // vertical    bot x , bot y , top neighbor y
     // horizontal  left x, left y, right neighbor x
     int x, y, neighbor;
+    Segments(int _x, int _y, int _n) : x(_x){
+        this->y = _y;
+        this->neighbor = _n;
+        if(this->y > this->neighbor) std::swap(this->y, this->neighbor);
+    }
 };
 
 struct Net
@@ -29,8 +34,8 @@ struct Net
         this->number_of_pins++;
     }
 
-    void addVerSegments(){
-
+    void addVerSegments(int x, int y, int neighbor){
+        this->ver_segments.push_back(new Segments(x, y, neighbor));
     }
 
     void addHorSegments(){
@@ -51,8 +56,8 @@ struct Channel
 
     Channel(int t)
     {
-        this->ver_tracks.resize(t+1, 0);
-        this->hor_tracks.resize(t+1, 0);
+        this->ver_tracks.resize(t+2, 0);
+        this->hor_tracks.resize(t+2, 0);
         this->number_of_columns = 0;
         this->number_of_tracks = t;
     }
@@ -67,8 +72,11 @@ struct Channel
             this->netlist[src]->addPin(column);
         }
     }
-
+    void clearVerTracks();
     void fillVerTracks(int low, int high, int pin_index);
     void fillHorTracks(int track, int pin_index);
+    void insertVerTracks(int track, int pin_index);
+    void insertHorTracks(int track, int pin_index);
+    void refineOldSegments(int k);
 };
 

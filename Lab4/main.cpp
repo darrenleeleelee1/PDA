@@ -5,11 +5,15 @@
 int main(int argc, char const *argv[])
 {
     Timer timer;
-    GreedyRouter *gr = new GreedyRouter(0, 0, 0);
+    GreedyRouter *gr = new GreedyRouter(5, 10, 10);
     std::cout << "Read Channel\n"; timer.setShortTerm();
     io::readChannel(gr->channel, argv[1]);
     std::cout << "Read time: " << timer.getShortTerm() << "\n";
     
+    std::cout << "Routing\n"; timer.setShortTerm();
+    gr->main();
+    std::cout << "Routing time: " << timer.getShortTerm() << "\n";
+
     std::cout << "Write Nets\n"; timer.setShortTerm();
     io::writeNets(gr->channel, argv[2]);
     std::cout << "Write time: " << timer.getShortTerm() << "\n";

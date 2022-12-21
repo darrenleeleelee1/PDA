@@ -40,7 +40,14 @@ void io::writeNets(Channel *channel, char const *file_path)
 {
     std::ofstream out_file(file_path, std::ofstream::trunc);
     for(auto i : channel->netlist){
-        std::cout << i.first << " " << i.second->last_column << "\n";
+        out_file << ".begin " << i.first << "\n";
+        for(auto j : i.second->ver_segments){
+            out_file << ".V " << j->x << " " << j->y << " " << j->neighbor << "\n";
+        }
+        for(auto j : i.second->hor_segments){
+            out_file << ".H " << j->x << " " << j->y << " " << j->neighbor << "\n";
+        }
+        out_file << ".end\n";
     }
     // out_file << "tmp\n";
     out_file.close();
@@ -48,7 +55,8 @@ void io::writeNets(Channel *channel, char const *file_path)
 
 void io::drawNets(char const *input_path, char const *result_path, char const *output_path)
 {
-    std::ofstream out_file(output_path, std::ofstream::trunc);
+    std::string out_file_name = output_path;
+    std::ofstream out_file(out_file_name + ".gdt", std::ofstream::trunc);
     time_t rawtime;
 	struct tm * timeinfo = nullptr;
 	time (&rawtime);
@@ -59,7 +67,8 @@ void io::drawNets(char const *input_path, char const *result_path, char const *o
 	
     // Tokenize the string
     const char *delimiters = "/";
-    char *token = strtok((char*)output_path, delimiters);
+    char* tmp_str = (char*)output_path;
+    char *token = strtok((char*)tmp_str, delimiters);
     char *last_token = nullptr;
     while (token != nullptr) {
         last_token = token;
@@ -128,22 +137,10 @@ void io::drawNets(char const *input_path, char const *result_path, char const *o
     }
     in_file.close();
 
-
-    
-
     out_file << "}\n}\n";
     out_file.close();
     
-    const char *dl2 = ".";
-    char *t = strtok((char*)last_token, dl2);
-    char *lt = nullptr;
-    while (t != nullptr) {
-        lt = t;
-        t = strtok(nullptr, delimiters);
-        break;
-    }
-    std::string file_name = lt;
-    std::string command = "./gdt2gds ./drawing/" + file_name + ".gdt ./drawing/" + file_name + ".gds";
+    std::string command = "./gdt2gds " + out_file_name + ".gdt " + out_file_name + ".gds";
     std::cout << command << "\n";
     system(command.c_str());
 }

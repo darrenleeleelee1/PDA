@@ -7,20 +7,14 @@
 .begin 3
 .end
 .begin 4
+.V 0 0 1
 .end
 .begin 5
 .end
 .begin 6
 .end
-.begin 8
+.begin 7
 .end
-.begin 10
-.end
-.begin 11
-.end
-.begin 12
-.end
-.begin 14
-.end
-.begin 20
+.begin 9
+.V 0 5 6
 .end
