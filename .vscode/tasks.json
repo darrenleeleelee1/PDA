@@ -27,7 +27,7 @@
       {
         "label": "build Lab4",
         "type": "shell",
-        "command": "cd ${cwd}/Lab4 && make -j8", 
+        "command": "cd ${cwd}/Lab4 && make clean && make -j8", 
         "group": {
           "kind": "build",
           "isDefault": true

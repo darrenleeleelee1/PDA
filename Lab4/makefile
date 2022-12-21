@@ -40,10 +40,10 @@ $(EXE): $(OBJ_FILES) $(OBJ_DIR)/main.o
 
 # The rule to build the object files
 $(OBJ_DIR)/%.o: %.cpp
-	$(CC) $(CFLAGS) $(INCLUDE_PATHS) -include $(HEADER_FILES) -c -o $@ $<
+	$(CC) $(CFLAGS) $(INCLUDE_PATHS) -c -o $@ $<
 
 $(OBJ_DIR)/main.o: main.cpp
-	$(CC) $(CFLAGS) $(INCLUDE_PATHS) -include $(HEADER_FILES) -c -o $@ $<
+	$(CC) $(CFLAGS) $(INCLUDE_PATHS) -c -o $@ $<
 # A rule to clean up the project directory
 .PHONY: clean
 clean:
