@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/Lab4/Lab4",
             // "args": ["./case/case1.txt", "./out/case1.txt"],
-            "args": ["./case/case1.txt", "./out/case1.txt", "./drawing/case1"],
+            "args": ["./case/case3.txt", "./out/case3.txt", "./drawing/case3"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/Lab4/",
             "preLaunchTask": "build Lab4",

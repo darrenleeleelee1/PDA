@@ -47,7 +47,7 @@ int GreedyRouter::methodA(int column)
             }
         }
     }
-    if(top_pin_index == bot_pin_index && pq.size() == 0){
+    if(top_pin_index != 0 && top_pin_index == bot_pin_index && pq.size() == 0){
         if(column >= this->channel->netlist[top_pin_index]->last_column){
             if(checkVerTracks(0, this->channel->number_of_tracks, this->channel->ver_tracks)){
                 this->channel->netlist[top_pin_index]->addVerSegments(column, 0, this->channel->number_of_tracks);
@@ -61,12 +61,21 @@ int GreedyRouter::methodA(int column)
     // 3 both top and bot success
     int result = 0;
     while(!pq.empty()){
-        auto top_element = pq.top(); pq.pop();
-        if(checkVerTracks(top_element.sp, top_element.ep, this->channel->ver_tracks)){
-            this->channel->fillVerTracks(top_element.sp, top_element.ep, top_element.pin_index);
-            this->channel->fillHorTracks(top_element.ep, top_element.pin_index);
-            this->channel->netlist[top_element.pin_index]->addVerSegments(column, top_element.sp, top_element.ep);
-            if(top_pin_index == top_element.pin_index) result += 1;
+        auto element = pq.top(); pq.pop();
+        if(checkVerTracks(element.sp, element.ep, this->channel->ver_tracks)){
+            this->channel->fillVerTracks(element.sp, element.ep, element.pin_index);
+            this->channel->fillHorTracks(element.ep, element.pin_index);
+            if(!this->channel->netlist[element.pin_index]->in_tracks.count(element.ep)){
+                this->channel->netlist[element.pin_index]->in_tracks.insert(element.ep);
+            }
+            else{
+                if(this->channel->netlist[element.pin_index]->last_column == column){
+                    this->channel->netlist[element.pin_index]->in_tracks.erase(element.ep);
+                    this->channel->hor_tracks[element.ep] = 0;
+                }
+            }            
+            this->channel->netlist[element.pin_index]->addVerSegments(column, element.sp, element.ep);
+            if(top_pin_index == element.pin_index) result += 1;
             else result += 2;
         }
     }
@@ -93,31 +102,39 @@ void GreedyRouter::methodE(int result_A, int column)
 {
     // bot not enough tracks
     if(result_A == 0 || result_A == 1){
-        for(int i = static_cast<int>((this->channel->number_of_tracks + 1) / 2); i >= 1; i--){
-            if(checkVerTracks(0, i-1, this->channel->ver_tracks)){
-                int pin_index = this->channel->bot_pins[column];
-                this->channel->insertVerTracks(i, pin_index);
-                this->channel->insertHorTracks(i, pin_index);
-                this->channel->number_of_tracks++;
-                this->channel->fillVerTracks(0, i, pin_index);
-                this->channel->refineOldSegments(i);
-                this->channel->netlist[pin_index]->addVerSegments(column, 0, i);
-                break;
+        int pin_index = this->channel->bot_pins[column];
+        if(pin_index != 0){
+            for(int i = static_cast<int>((this->channel->number_of_tracks + 1) / 2); i >= 1; i--){
+                if(checkVerTracks(0, i-1, this->channel->ver_tracks)){
+                    this->channel->insertVerTracks(i, pin_index);
+                    this->channel->insertHorTracks(i, pin_index);
+                    this->channel->number_of_tracks++;
+                    this->channel->fillVerTracks(0, i, pin_index);
+                    this->channel->fillHorTracks(i, pin_index);
+                    this->channel->refineOldSegments(i);
+                    this->channel->netlist[pin_index]->in_tracks.insert(i);
+                    this->channel->netlist[pin_index]->addVerSegments(column, 0, i);
+                    break;
+                }
             }
         }
     }
     // top not enough tracks
     if(result_A == 0 || result_A == 2){
-        for(int i = static_cast<int>((this->channel->number_of_tracks) / 2 + 1); i <= this->channel->number_of_tracks; i++){
-            if(checkVerTracks(i, this->channel->number_of_tracks + 1, this->channel->ver_tracks)){
-                int pin_index = this->channel->top_pins[column];
-                this->channel->insertVerTracks(i, pin_index);
-                this->channel->insertHorTracks(i, pin_index);
-                this->channel->number_of_tracks++;
-                this->channel->fillVerTracks(i, this->channel->number_of_tracks + 1, pin_index);
-                this->channel->refineOldSegments(i);
-                this->channel->netlist[pin_index]->addVerSegments(column, i, this->channel->number_of_tracks + 1);
-                break;
+        int pin_index = this->channel->top_pins[column];
+        if(pin_index != 0){
+            for(int i = static_cast<int>((this->channel->number_of_tracks) / 2 + 1); i <= this->channel->number_of_tracks; i++){
+                if(checkVerTracks(i, this->channel->number_of_tracks + 1, this->channel->ver_tracks)){
+                    this->channel->insertVerTracks(i, pin_index);
+                    this->channel->insertHorTracks(i, pin_index);
+                    this->channel->number_of_tracks++;
+                    this->channel->fillVerTracks(i, this->channel->number_of_tracks + 1, pin_index);
+                    this->channel->fillHorTracks(i, pin_index);
+                    this->channel->refineOldSegments(i);
+                    this->channel->netlist[pin_index]->in_tracks.insert(i);
+                    this->channel->netlist[pin_index]->addVerSegments(column, i, this->channel->number_of_tracks + 1);
+                    break;
+                }
             }
         }
     }

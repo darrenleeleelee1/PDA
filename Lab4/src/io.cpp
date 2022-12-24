@@ -40,6 +40,7 @@ void io::writeNets(Channel *channel, char const *file_path)
 {
     std::ofstream out_file(file_path, std::ofstream::trunc);
     for(auto i : channel->netlist){
+        if(i.first == 0) continue;
         out_file << ".begin " << i.first << "\n";
         for(auto j : i.second->ver_segments){
             out_file << ".V " << j->x << " " << j->y << " " << j->neighbor << "\n";

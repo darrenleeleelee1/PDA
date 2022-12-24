@@ -1,32 +1,40 @@
 #pragma once
 #include <vector>
 #include <map>
-#include <set>
+#include <unordered_set>
 enum STATUS{
     rising = 1,
     steady = 0,
     falling = -1
 };
 
-struct Segments{
+struct VSegments{
     // vertical    bot x , bot y , top neighbor y
-    // horizontal  left x, left y, right neighbor x
     int x, y, neighbor;
-    Segments(int _x, int _y, int _n) : x(_x){
+    VSegments(int _x, int _y, int _n) : x(_x){
         this->y = _y;
         this->neighbor = _n;
         if(this->y > this->neighbor) std::swap(this->y, this->neighbor);
     }
 };
+struct HSegments{
+    // horizontal  left x, left y, right neighbor x
+    int x, y, neighbor;
+    HSegments(int _x, int _y, int _n) : y(_y){
+        this->x = _x;
+        this->neighbor = _n;
+        if(this->x > this->neighbor) std::swap(this->x, this->neighbor);
+    }
+};
 
 struct Net
 {
-    std::set<int> in_tracks;
+    std::unordered_set<int> in_tracks;
     STATUS status;
     int last_column;
     int number_of_pins;
-    std::vector<Segments*> ver_segments;
-    std::vector<Segments*> hor_segments;
+    std::vector<VSegments*> ver_segments;
+    std::vector<HSegments*> hor_segments;
     Net(int col): last_column(col), number_of_pins(1){}
 
     void addPin(int col){
@@ -35,11 +43,10 @@ struct Net
     }
 
     void addVerSegments(int x, int y, int neighbor){
-        this->ver_segments.push_back(new Segments(x, y, neighbor));
+        this->ver_segments.push_back(new VSegments(x, y, neighbor));
     }
-
-    void addHorSegments(){
-        
+    
+    void addHorSegments(int x, int y, int neighbor){
     }
 };
 
@@ -52,12 +59,16 @@ struct Channel
     std::map<int, Net*> netlist;
     std::vector<int> ver_tracks;
     std::vector<int> hor_tracks;
+    std::vector<int> pre_hor_tracks;
+    std::vector<HSegments*> tmp_hor_segments;
     Channel(){}
 
     Channel(int t)
     {
         this->ver_tracks.resize(t+2, 0);
         this->hor_tracks.resize(t+2, 0);
+        this->pre_hor_tracks.resize(t+2, 0);
+        this->tmp_hor_segments.resize(t+2, nullptr);
         this->number_of_columns = 0;
         this->number_of_tracks = t;
     }

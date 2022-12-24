@@ -5,7 +5,7 @@
 int main(int argc, char const *argv[])
 {
     Timer timer;
-    GreedyRouter *gr = new GreedyRouter(5, 10, 10);
+    GreedyRouter *gr = new GreedyRouter(1, 10, 10);
     std::cout << "Read Channel\n"; timer.setShortTerm();
     io::readChannel(gr->channel, argv[1]);
     std::cout << "Read time: " << timer.getShortTerm() << "\n";

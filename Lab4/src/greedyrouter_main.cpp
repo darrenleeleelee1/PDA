@@ -3,9 +3,25 @@
 void GreedyRouter::main()
 {
     for(int i = 0; i < this->channel->number_of_columns; i++){
+        // save pre horizontal tracks
+        this->channel->pre_hor_tracks.assign(this->channel->hor_tracks.begin(), this->channel->hor_tracks.end());
         int result_A = this->methodA(i);
         this->methodE(result_A, i);
         
+        for(int j = 1; j <= this->channel->number_of_tracks; j++){
+            int now_pin_index = this->channel->hor_tracks.at(j);
+            int pre_pin_index = this->channel->pre_hor_tracks.at(j);
+            if(pre_pin_index == 0 && now_pin_index != 0){
+                this->channel->tmp_hor_segments.at(j) = new HSegments(i, j, i);
+            }
+            else if(pre_pin_index != now_pin_index){
+                this->channel->tmp_hor_segments.at(j)->neighbor = i;
+                this->channel->netlist[pre_pin_index]->hor_segments.push_back(this->channel->tmp_hor_segments.at(j));
+                this->channel->tmp_hor_segments.at(j) = nullptr;
+            }
+        }
+        this->channel->clearVerTracks();
+        /*
         std::string t = "./case/case1.txt";
         std::string k = "./out/case1_" + std::to_string(i) + ".txt";
         std::string j = "./drawing/case1_" + std::to_string(i);
@@ -13,6 +29,6 @@ void GreedyRouter::main()
         std::string command = "rm ./drawing/case1_" + std::to_string(i) + ".gdt";
         io::drawNets(t.c_str(), k.c_str(), j.c_str());
         system(command.c_str());
-        this->channel->clearVerTracks();
+        */
     }
 }
