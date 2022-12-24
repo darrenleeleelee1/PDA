@@ -12,10 +12,11 @@ struct GreedyRouter
         this->channel = new Channel(i);
     }
     void main();
-    int methodA(int col);
-    void methodB();
-    void methodC();
-    void methodD();
+    void computeNetsStatus(int column);
+    int methodA(int column);
+    void methodB(int column);
+    void methodC(int column);
+    void methodD(int column);
     void methodE(int result_A, int column);
     
 };
