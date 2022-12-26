@@ -17,27 +17,41 @@ bool checkVerTracks(int low, int high, int pin_index, std::vector<int> &ver_trac
     if(low > high) std::swap(low, high);
     
     bool ok = true;
+    int test = 0;
     for(int i = low; i <= high; i++){
+        if(ver_tracks[i] == pin_index) test++;
         if(ver_tracks[i] != 0 && ver_tracks[i] != pin_index){
             ok = false;
         }
     }
-    
+    if(test == high - low + 1) ok = false;
     return ok;
 }
 void GreedyRouter::computeNetsStatus(int column)
 {
-    int boundry = std::min(column + this->steady_net_constant, static_cast<int>(this->channel->top_pins.size() - 1));
     for(auto n : this->channel->netlist){
-        if(n.first == 0) continue;
-        bool top = false, bot = false;
-        for(int i = column; i <= boundry; i++){
-            if(this->channel->top_pins.at(i) == n.first) top = true;
-            if(this->channel->bot_pins.at(i) == n.first) bot = true;
+        if(n.second->last_column < column) {
+            n.second->status = STATUS::steady;
+            continue;
         }
-        n.second->status = STATUS::steady;
-        if(top) n.second->status = STATUS::rising;
-        else if(bot) n.second->status = STATUS::falling;
+        if(n.first == 0) continue;
+
+        int sp = INT32_MAX;
+        for(int i = column; i <= n.second->last_column; i++){
+            if(this->channel->top_pins.at(i) == n.first || this->channel->bot_pins.at(i) == n.first){
+                sp = i;
+                break;
+            }
+        }
+        int test = 0;
+        int boundry = std::min(sp + this->steady_net_constant, n.second->last_column);
+        for(int i = sp; i <= boundry; i++){
+            if(this->channel->top_pins.at(i) == n.first) test++;
+            else if(this->channel->bot_pins.at(i) == n.first) test--;
+        }
+        if(test == 0) n.second->status = STATUS::steady;
+        else if(test > 0) n.second->status = STATUS::rising;
+        else n.second->status = STATUS::falling;
     }
 }
 int GreedyRouter::methodA(int column)
@@ -190,7 +204,7 @@ void GreedyRouter::methodC(int column)
         auto element = pq.top(); pq.pop();
         // if(element.segments_length < this->minimum_jog_length) break;
         if(checkVerTracks(element.sp, element.ep, element.pin_index, this->channel->ver_tracks)){
-            this->channel->fillVerTracks(element.sp, element.ep, 0);
+            this->channel->fillVerTracks(element.sp, element.ep, element.pin_index);
             
 
             // The other split nets between this verticle need to be close
@@ -215,7 +229,43 @@ void GreedyRouter::methodC(int column)
 
 void GreedyRouter::methodD(int column)
 {
+    std::priority_queue<VerticalSegments> pq;
     
+    for(int i = 1; i <= this->channel->number_of_tracks; i++){
+        int pin_index = this->channel->hor_tracks.at(i);
+        if(pin_index != 0 && this->channel->netlist[pin_index]->in_tracks.size() == 1){
+
+            // rising pick top one else pick bottom one
+            if(this->channel->netlist[pin_index]->status == rising){
+                for(int j = i + 1; j <= this->channel->number_of_tracks; j++){
+                    if(this->channel->hor_tracks.at(j) == 0 || this->channel->hor_tracks.at(j) == pin_index){
+                        pq.emplace(pin_index, i, j);
+                    }
+                }
+            }
+            else{
+                for(int j = i - 1; j >= 1; j--){
+                    if(this->channel->hor_tracks.at(j) == 0 || this->channel->hor_tracks.at(j) == pin_index){
+                        pq.emplace(pin_index, i, j);
+                    }
+                }
+            }
+        }
+    }
+    while(!pq.empty()){
+        auto element = pq.top(); pq.pop();
+        if(element.segments_length < this->minimum_jog_length) break;
+        if(checkVerTracks(element.sp, element.ep, element.pin_index, this->channel->ver_tracks)){
+            this->channel->fillVerTracks(element.sp, element.ep, element.pin_index);
+            this->channel->fillHorTracks(element.ep, element.pin_index);
+            this->channel->hor_tracks.at(element.sp) = 0;
+
+            this->channel->netlist[element.pin_index]->in_tracks.erase(element.sp);
+            this->channel->netlist[element.pin_index]->in_tracks.insert(element.ep);
+            
+            this->channel->netlist[element.pin_index]->addVerSegments(column, element.sp, element.ep);
+        }
+    }
 }
 
 void GreedyRouter::methodE(int result_A, int column)

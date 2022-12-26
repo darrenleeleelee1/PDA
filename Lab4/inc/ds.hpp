@@ -35,7 +35,9 @@ struct Net
     int number_of_pins;
     std::vector<VSegments*> ver_segments;
     std::vector<HSegments*> hor_segments;
-    Net(int col): last_column(col), number_of_pins(1){}
+    Net(int col): last_column(col), number_of_pins(1){
+        this->status = STATUS::steady;
+    }
 
     void addPin(int col){
         this->last_column = std::max(this->last_column, col);
