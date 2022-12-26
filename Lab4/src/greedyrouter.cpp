@@ -1,31 +1,38 @@
 #include "greedyrouter.hpp"
 #include <queue>
 #include <algorithm>
-struct VerticalSegments
+class VerticalSegments
 {
-    Net *net;
-    int pin_index, column, sp, ep, segments_length;
-    int number_of_free_hor_segments;
-    double offset;
+public:
+    int pin_index, sp, ep, segments_length;
     VerticalSegments(){}
-    VerticalSegments(int p, int c, int o, Net *n, int _y1, int _y2) : pin_index(p), column(c), sp(_y1), ep(_y2) {
-        this->net = n;
+    VerticalSegments(int p, int _y1, int _y2) : pin_index(p), sp(_y1), ep(_y2) {
         this->segments_length = std::abs(_y1 - _y2);
-        this->number_of_free_hor_segments = 0;
-        this->offset = std::max(static_cast<double>(o) / 2 - this->ep, this->ep - static_cast<double>(o) / 2);
-        for(int i = std::min(this->sp, this->ep); i <= std::max(this->sp, this->ep); i++){
-            if(this->net->in_tracks.count(i)) this->number_of_free_hor_segments++;
-        }
-        if(column < this->net->last_column || this->number_of_free_hor_segments < static_cast<int>(this->net->in_tracks.size())){
-            this->number_of_free_hor_segments--;
-        }
     }
     bool operator<(const VerticalSegments &other) const{
-        if(this->number_of_free_hor_segments == other.number_of_free_hor_segments){
-            if(this->offset == other.offset) return this->segments_length < other.segments_length;
-            return this->offset > other.offset;
-        }
-        return this->number_of_free_hor_segments < other.number_of_free_hor_segments;
+        return segments_length < other.segments_length;
+    }
+};
+class VS_Longest : public VerticalSegments
+{
+public:
+    VS_Longest() : VerticalSegments(){}
+    VS_Longest(int p, int _y1, int _y2) : VerticalSegments(p , _y1, _y2){}
+    bool operator<(const VS_Longest &other) const{
+        return this->segments_length < other.segments_length;
+    }
+};
+class VS_FreeUp : public VerticalSegments
+{
+public:
+    Net *net;
+    int column;
+    int number_of_free_hor_segments;
+    double offset;
+    VS_FreeUp() : VerticalSegments(){}
+    VS_FreeUp(int p, int _y1, int _y2) : VerticalSegments(p , _y1, _y2){}
+    bool operator<(const VS_FreeUp &other) const{
+        return this->segments_length < other.segments_length;
     }
 };
 bool checkVerTracks(int low, int high, int pin_index, std::vector<int> &ver_tracks)
@@ -36,7 +43,7 @@ bool checkVerTracks(int low, int high, int pin_index, std::vector<int> &ver_trac
     int test = 0;
     for(int i = low; i <= high; i++){
         if(ver_tracks[i] == pin_index) test++;
-        if(ver_tracks[i] != 0){
+        if(ver_tracks[i] != 0 && ver_tracks[i] != pin_index){
             ok = false;
         }
     }
@@ -79,7 +86,7 @@ int GreedyRouter::methodA(int column)
     if(top_pin_index != 0){
         for(int i = this->channel->number_of_tracks; i >= 1; i--){
             if(this->channel->hor_tracks.at(i) == 0 || this->channel->hor_tracks.at(i) == top_pin_index){
-                pq.emplace(top_pin_index, column, this->channel->number_of_tracks, this->channel->netlist[top_pin_index], this->channel->number_of_tracks + 1, i);
+                pq.emplace(top_pin_index, this->channel->number_of_tracks + 1, i);
                 break;
             }
         }
@@ -88,7 +95,7 @@ int GreedyRouter::methodA(int column)
     if(bot_pin_index != 0){
         for(int i = 1; i <= this->channel->number_of_tracks; i++){
             if(this->channel->hor_tracks.at(i) == 0 || this->channel->hor_tracks.at(i) == bot_pin_index){
-                pq.emplace(bot_pin_index, column, this->channel->number_of_tracks, this->channel->netlist[bot_pin_index], 0, i);
+                pq.emplace(bot_pin_index, 0, i);
                 break;
             }
         }
@@ -133,7 +140,7 @@ int GreedyRouter::methodA(int column)
 
 void GreedyRouter::methodB(int column)
 {
-    std::priority_queue<VerticalSegments> pq;
+    std::priority_queue<VS_FreeUp> pq;
     
     for(int i = 1; i <= this->channel->number_of_tracks; i++){
         int pin_index = this->channel->hor_tracks.at(i);
@@ -145,10 +152,10 @@ void GreedyRouter::methodB(int column)
 
             // rising pick top one else pick bottom one
             if(this->channel->netlist[pin_index]->status == rising){
-                pq.emplace(pin_index, column, this->channel->number_of_tracks, this->channel->netlist[pin_index], *botmost_track, *topmost_track);
+                pq.emplace(pin_index, *botmost_track, *topmost_track);
             }
             else{
-                pq.emplace(pin_index, column, this->channel->number_of_tracks, this->channel->netlist[pin_index], *topmost_track, *botmost_track);
+                pq.emplace(pin_index, *topmost_track, *botmost_track);
             }
         
         }
@@ -196,7 +203,7 @@ void GreedyRouter::methodB(int column)
 
 void GreedyRouter::methodC(int column)
 {
-    std::priority_queue<VerticalSegments> pq;
+    std::priority_queue<VS_Longest> pq;
     
     for(int i = 1; i <= this->channel->number_of_tracks; i++){
         int pin_index = this->channel->hor_tracks.at(i);
@@ -207,13 +214,13 @@ void GreedyRouter::methodC(int column)
                                     , this->channel->netlist[pin_index]->in_tracks.end());
             for(int j = *topmost_track - 1; j > *botmost_track; j--){
                 if(this->channel->hor_tracks.at(j) == 0 || this->channel->hor_tracks.at(j) == pin_index){
-                    pq.emplace(pin_index, column, this->channel->number_of_tracks, this->channel->netlist[pin_index], *topmost_track, j);
+                    pq.emplace(pin_index, *topmost_track, j);
                 }
             }
             
             for(int j = *botmost_track + 1; j < *topmost_track; j++){
                 if(this->channel->hor_tracks.at(j) == 0 || this->channel->hor_tracks.at(j) == pin_index){
-                    pq.emplace(pin_index, column, this->channel->number_of_tracks, this->channel->netlist[pin_index], *botmost_track, j);
+                    pq.emplace(pin_index, *botmost_track, j);
                 }
             }
         }
@@ -247,25 +254,24 @@ void GreedyRouter::methodC(int column)
 
 void GreedyRouter::methodD(int column)
 {
-    std::priority_queue<VerticalSegments> pq;
+    std::priority_queue<VS_Longest> pq;
     
     for(int i = 1; i <= this->channel->number_of_tracks; i++){
         int pin_index = this->channel->hor_tracks.at(i);
-        if(this->channel->netlist[pin_index]->status == STATUS::steady) continue;
         if(pin_index != 0 && this->channel->netlist[pin_index]->in_tracks.size() == 1){
 
             // rising pick top one else pick bottom one
-            if(this->channel->netlist[pin_index]->status == STATUS::rising){
+            if(this->channel->netlist[pin_index]->status == rising){
                 for(int j = i + 1; j <= this->channel->number_of_tracks; j++){
                     if(this->channel->hor_tracks.at(j) == 0 || this->channel->hor_tracks.at(j) == pin_index){
-                        pq.emplace(pin_index, column, this->channel->number_of_tracks, this->channel->netlist[pin_index], i, j);
+                        pq.emplace(pin_index, i, j);
                     }
                 }
             }
             else{
                 for(int j = i - 1; j >= 1; j--){
                     if(this->channel->hor_tracks.at(j) == 0 || this->channel->hor_tracks.at(j) == pin_index){
-                        pq.emplace(pin_index, column, this->channel->number_of_tracks, this->channel->netlist[pin_index], i, j);
+                        pq.emplace(pin_index, i, j);
                     }
                 }
             }

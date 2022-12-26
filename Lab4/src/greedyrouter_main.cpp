@@ -31,7 +31,7 @@ void GreedyRouter::main()
         this->channel->clearVerTracks();
 
         // debug
-        if(i >= 0){
+        if(i >= 999){
             std::string t = "./case/case1.txt";
             std::string k = "./out/case1_" + std::to_string(i) + ".txt";
             std::string j = "./drawing/case1_" + std::to_string(i);
