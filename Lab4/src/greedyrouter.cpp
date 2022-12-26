@@ -30,9 +30,23 @@ public:
     int number_of_free_hor_segments;
     double offset;
     VS_FreeUp() : VerticalSegments(){}
-    VS_FreeUp(int p, int _y1, int _y2) : VerticalSegments(p , _y1, _y2){}
+    VS_FreeUp(int p, int c, int o, Net *n, int _y1, int _y2) : VerticalSegments(p , _y1, _y2), column(c){
+        this->net = n;
+        this->number_of_free_hor_segments = 0;
+        this->offset = std::max(static_cast<double>(o) / 2 - this->ep, this->ep - static_cast<double>(o) / 2);
+        for(int i = std::min(this->sp, this->ep); i <= std::max(this->sp, this->ep); i++){
+            if(this->net->in_tracks.count(i)) this->number_of_free_hor_segments++;
+        }
+        if(column < this->net->last_column || this->number_of_free_hor_segments < static_cast<int>(this->net->in_tracks.size())){
+            this->number_of_free_hor_segments--;
+        }
+    }
     bool operator<(const VS_FreeUp &other) const{
-        return this->segments_length < other.segments_length;
+        if(this->number_of_free_hor_segments == other.number_of_free_hor_segments){
+            if(this->offset == other.offset) return this->segments_length < other.segments_length;
+            return this->offset > other.offset;
+        }
+        return this->number_of_free_hor_segments < other.number_of_free_hor_segments;
     }
 };
 bool checkVerTracks(int low, int high, int pin_index, std::vector<int> &ver_tracks)
@@ -154,7 +168,8 @@ void GreedyRouter::methodB(int column)
             for(int t = 0; t < static_cast<int>(in_track_vector.size()); t++){
                 for(int p = t + 1; p < static_cast<int>(in_track_vector.size()); p++){
                     if(t != p){
-                        pq.emplace(pin_index, in_track_vector.at(t), in_track_vector.at(p));
+                        pq.emplace(pin_index, column, this->channel->number_of_tracks
+                        , this->channel->netlist[pin_index], in_track_vector.at(t), in_track_vector.at(p));
                     }
                 }    
             }
