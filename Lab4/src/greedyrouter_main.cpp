@@ -7,10 +7,10 @@ void GreedyRouter::main()
         this->channel->pre_hor_tracks.assign(this->channel->hor_tracks.begin(), this->channel->hor_tracks.end());
         // compute all nets status
         this->computeNetsStatus(i + 1);
-        
+
         int result_A = this->methodA(i);
         this->methodB(i);
-        this->methodC(i);
+        // this->methodC(i);
         // this->methodD(i);
         this->methodE(result_A, i);
         
@@ -30,12 +30,17 @@ void GreedyRouter::main()
         // clear verticle track
         this->channel->clearVerTracks();
 
-        std::string t = "./case/case1.txt";
-        std::string k = "./out/case1_" + std::to_string(i) + ".txt";
-        std::string j = "./drawing/case1_" + std::to_string(i);
-        io::writeNets(this->channel, k.c_str());
-        std::string command = "rm ./drawing/case1_" + std::to_string(i) + ".gdt";
-        io::drawNets(t.c_str(), k.c_str(), j.c_str());
-        system(command.c_str());
+        // debug
+        if(i >= 999){
+            std::string t = "./case/case3.txt";
+            std::string k = "./out/case3_" + std::to_string(i) + ".txt";
+            std::string j = "./drawing/case3_" + std::to_string(i);
+            io::writeNets(this->channel, k.c_str());
+            std::string command = "rm ./drawing/case3_" + std::to_string(i) + ".gdt";
+            io::drawNets(t.c_str(), k.c_str(), j.c_str());
+            system(command.c_str());
+        }
+        // debug
+
     }
 }

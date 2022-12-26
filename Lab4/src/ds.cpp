@@ -45,15 +45,15 @@ void Channel::refineOldSegments(int k)
                 j->y += 1;
             }
         }
-        std::unordered_set<int> increase_set;
+        std::unordered_set<int> delete_set;
         for(auto j : i.second->in_tracks){
             if(j >= k){
-                i.second->in_tracks.erase(j);
-                increase_set.insert(j + 1);
+                delete_set.insert(j);
             }
         }
-        for(auto j : increase_set){
-            i.second->in_tracks.insert(j);
+        for(auto j : delete_set){
+            i.second->in_tracks.erase(j);
+            i.second->in_tracks.insert(j + 1);
         }
     }
     for(auto i : this->tmp_hor_segments){

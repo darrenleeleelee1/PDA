@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "(gdb) Lab4 verifier",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Lab4/verifier",
+            "args": ["./out/case1.txt", "./case/case1.txt"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/Lab4/",
+            "environment": [],
+            
+        },
+        {
             "name": "(gdb) Lab4",
             "type": "cppdbg",
             "request": "launch",

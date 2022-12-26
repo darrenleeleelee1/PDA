@@ -144,4 +144,8 @@ void io::drawNets(char const *input_path, char const *result_path, char const *o
     std::string command = "./gdt2gds " + out_file_name + ".gdt " + out_file_name + ".gds";
     std::cout << command << "\n";
     system(command.c_str());
+
+    std::string delete_command = "rm " + out_file_name + ".gdt ";
+    std::cout << delete_command << "\n";
+    system(delete_command.c_str());
 }
