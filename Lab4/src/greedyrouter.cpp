@@ -149,26 +149,32 @@ void GreedyRouter::methodB(int column)
                                     , this->channel->netlist[pin_index]->in_tracks.end());
             auto botmost_track = std::min_element(this->channel->netlist[pin_index]->in_tracks.begin()
                                     , this->channel->netlist[pin_index]->in_tracks.end());
-
-            // rising pick top one else pick bottom one
-            if(this->channel->netlist[pin_index]->status == rising){
-                pq.emplace(pin_index, *botmost_track, *topmost_track);
+            
+            std::vector<int> in_track_vector(this->channel->netlist[pin_index]->in_tracks.begin(), this->channel->netlist[pin_index]->in_tracks.end());
+            for(int t = 0; t < static_cast<int>(in_track_vector.size()); t++){
+                for(int p = t + 1; p < static_cast<int>(in_track_vector.size()); p++){
+                    if(t != p){
+                        pq.emplace(pin_index, in_track_vector.at(t), in_track_vector.at(p));
+                    }
+                }    
             }
-            else{
-                pq.emplace(pin_index, *topmost_track, *botmost_track);
-            }
+            // // rising pick top one else pick bottom one
+            // if(this->channel->netlist[pin_index]->status == rising){
+            //     pq.emplace(pin_index, *botmost_track, *topmost_track);
+            // }
+            // else{
+            //     pq.emplace(pin_index, *topmost_track, *botmost_track);
+            // }
         
         }
     }
 
     // TODO pop out all pq element, check verticle segment can be connected or not
     // If can, connect and record it
-    std::unordered_set<int> pop_list;
     while(!pq.empty()){
         auto element = pq.top(); pq.pop();
-        
-        if(!pop_list.count(element.pin_index) && checkVerTracks(element.sp, element.ep, element.pin_index, this->channel->ver_tracks)){
-            pop_list.insert(element.pin_index);
+
+        if(checkVerTracks(element.sp, element.ep, element.pin_index, this->channel->ver_tracks)){
             this->channel->fillVerTracks(element.sp, element.ep, element.pin_index);
             this->channel->fillHorTracks(element.ep, element.pin_index);
 
@@ -184,11 +190,12 @@ void GreedyRouter::methodB(int column)
             }
             // The other split nets need to be close
             std::unordered_set<int> tmp_s;
-            
-            for(auto i : this->channel->netlist[element.pin_index]->in_tracks){
+            for(int i = std::min(element.sp, element.ep); i <= std::max(element.sp, element.ep); i++){
                 if(i == element.ep) continue;
-                tmp_s.insert(i);
-                this->channel->hor_tracks.at(i) = 0;
+                if(this->channel->netlist[element.pin_index]->in_tracks.count(i)){
+                    tmp_s.insert(i);
+                    this->channel->hor_tracks.at(i) = 0;
+                }
             }
             for(auto i : tmp_s){
                 this->channel->netlist[element.pin_index]->in_tracks.erase(i);
