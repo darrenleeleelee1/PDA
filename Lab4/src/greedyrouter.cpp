@@ -10,7 +10,7 @@ public:
         this->segments_length = std::abs(_y1 - _y2);
     }
     bool operator<(const VerticalSegments &other) const{
-        return segments_length < other.segments_length;
+        return this->segments_length < other.segments_length;
     }
 };
 class VS_Longest : public VerticalSegments
@@ -44,7 +44,7 @@ public:
     bool operator<(const VS_FreeUp &other) const{
         if(this->number_of_free_hor_segments == other.number_of_free_hor_segments){
             if(this->offset == other.offset) return this->segments_length < other.segments_length;
-            return this->offset > other.offset;
+            return this->offset < other.offset;
         }
         return this->number_of_free_hor_segments < other.number_of_free_hor_segments;
     }
@@ -159,11 +159,6 @@ void GreedyRouter::methodB(int column)
     for(int i = 1; i <= this->channel->number_of_tracks; i++){
         int pin_index = this->channel->hor_tracks.at(i);
         if(pin_index != 0 && this->channel->netlist[pin_index]->in_tracks.size() > 1){
-            auto topmost_track = std::max_element(this->channel->netlist[pin_index]->in_tracks.begin()
-                                    , this->channel->netlist[pin_index]->in_tracks.end());
-            auto botmost_track = std::min_element(this->channel->netlist[pin_index]->in_tracks.begin()
-                                    , this->channel->netlist[pin_index]->in_tracks.end());
-            
             std::vector<int> in_track_vector(this->channel->netlist[pin_index]->in_tracks.begin(), this->channel->netlist[pin_index]->in_tracks.end());
             for(int t = 0; t < static_cast<int>(in_track_vector.size()); t++){
                 for(int p = t + 1; p < static_cast<int>(in_track_vector.size()); p++){
@@ -173,14 +168,6 @@ void GreedyRouter::methodB(int column)
                     }
                 }    
             }
-            // // rising pick top one else pick bottom one
-            // if(this->channel->netlist[pin_index]->status == rising){
-            //     pq.emplace(pin_index, *botmost_track, *topmost_track);
-            // }
-            // else{
-            //     pq.emplace(pin_index, *topmost_track, *botmost_track);
-            // }
-        
         }
     }
 
