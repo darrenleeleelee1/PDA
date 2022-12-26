@@ -100,8 +100,10 @@ int GreedyRouter::methodA(int column)
             }
             else{
                 if(this->channel->netlist[element.pin_index]->last_column <= column && this->channel->netlist[element.pin_index]->in_tracks.size() == 1){
-                    this->channel->netlist[element.pin_index]->in_tracks.erase(element.ep);
-                    this->channel->hor_tracks.at(element.ep) = 0;
+                    if(top_pin_index != bot_pin_index){
+                        this->channel->netlist[element.pin_index]->in_tracks.erase(element.ep);
+                        this->channel->hor_tracks.at(element.ep) = 0;
+                    }
                 }
             }            
             this->channel->netlist[element.pin_index]->addVerSegments(column, element.sp, element.ep);
