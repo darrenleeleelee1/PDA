@@ -80,15 +80,27 @@ void GreedyRouter::computeNetsStatus(int column)
                 break;
             }
         }
-        int test = 0;
+        // compute all top, bot number
+        // int test = 0;
+        // int boundry = std::min(sp + this->steady_net_constant, n.second->last_column);
+        // for(int i = sp; i <= boundry; i++){
+        //     if(this->channel->top_pins.at(i) == n.first) test++;
+        //     else if(this->channel->bot_pins.at(i) == n.first) test--;
+        // }
+        // if(test == 0) n.second->status = STATUS::steady;
+        // else if(test > 0) n.second->status = STATUS::rising;
+        // else n.second->status = STATUS::falling;
+
+        // count steady if exist in top bot, no matter the number
+        bool top = false, bot = false;
         int boundry = std::min(sp + this->steady_net_constant, n.second->last_column);
         for(int i = sp; i <= boundry; i++){
-            if(this->channel->top_pins.at(i) == n.first) test++;
-            else if(this->channel->bot_pins.at(i) == n.first) test--;
+            if(this->channel->top_pins.at(i) == n.first) top = true;
+            else if(this->channel->bot_pins.at(i) == n.first) bot = true;
         }
-        if(test == 0) n.second->status = STATUS::steady;
-        else if(test > 0) n.second->status = STATUS::rising;
-        else n.second->status = STATUS::falling;
+        n.second->status = STATUS::steady;
+        if(top && !bot) n.second->status = STATUS::rising;
+        else if(!top && bot) n.second->status = STATUS::falling;
     }
 }
 int GreedyRouter::methodA(int column)
@@ -185,7 +197,11 @@ void GreedyRouter::methodB(int column)
                 this->channel->netlist[element.pin_index]->in_tracks.insert(element.ep);
             }
             else{
-                if(this->channel->netlist[element.pin_index]->last_column <= column){
+                unsigned int number_to_free = 0;
+                for(int i = std::min(element.sp, element.ep); i <= std::max(element.sp, element.ep); i++){
+                    if(this->channel->netlist[element.pin_index]->in_tracks.count(i)) number_to_free++;
+                }
+                if(this->channel->netlist[element.pin_index]->last_column <= column && this->channel->netlist[element.pin_index]->in_tracks.size() <= number_to_free){
                     this->channel->netlist[element.pin_index]->in_tracks.erase(element.ep);
                     this->channel->hor_tracks.at(element.ep) = 0;
                 }
@@ -277,7 +293,7 @@ void GreedyRouter::methodD(int column)
                     }
                 }
             }
-            else{
+            else if(this->channel->netlist[pin_index]->status == falling){
                 for(int j = i - 1; j >= 1; j--){
                     if(this->channel->hor_tracks.at(j) == 0 || this->channel->hor_tracks.at(j) == pin_index){
                         pq.emplace(pin_index, i, j);

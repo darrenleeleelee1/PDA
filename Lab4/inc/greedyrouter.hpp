@@ -18,5 +18,4 @@ struct GreedyRouter
     void methodC(int column);
     void methodD(int column);
     void methodE(int result_A, int column);
-    
 };

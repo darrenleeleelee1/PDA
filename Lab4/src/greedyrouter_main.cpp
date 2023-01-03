@@ -32,11 +32,11 @@ void GreedyRouter::main()
 
         // debug
         if(i >= 999){
-            std::string t = "./case/case3.txt";
-            std::string k = "./out/case3_" + std::to_string(i) + ".txt";
-            std::string j = "./drawing/case3_" + std::to_string(i);
+            std::string t = "./case/case1.txt";
+            std::string k = "./out/case1_" + std::to_string(i) + ".txt";
+            std::string j = "./drawing/case1_" + std::to_string(i);
             io::writeNets(this->channel, k.c_str());
-            std::string command = "rm ./drawing/case3_" + std::to_string(i) + ".gdt";
+            std::string command = "rm ./drawing/case1_" + std::to_string(i) + ".gdt";
             io::drawNets(t.c_str(), k.c_str(), j.c_str());
             system(command.c_str());
         }

@@ -18,7 +18,46 @@ void tokenLine(std::vector<std::string> &tokens, std::string line)
         tokens.push_back(intermediate);
     }
 }
-
+bool io::verifyResults(char const *input_path, char const *result_path, int &used_tracks, int verbose)
+{
+    
+    std::string ip2string = input_path;
+    std::string rp2string = result_path;
+    std::string command = "./verifier " + rp2string + " " + ip2string;
+    std::string command_output = ""; // variable to store command_output
+    std::vector<std::string> tokens;
+    // execute the command and store the command_output in a string
+    FILE *fp = popen(command.c_str(), "r");
+    char buffer[1024];
+    if(verbose == 1) std::cout << "-----Verify log----\n";
+    bool ok = false;
+    while (fgets(buffer, 1024, fp) != NULL) {
+        command_output = buffer;
+        tokenLine(tokens, command_output);
+        if(tokens.size() == 4){
+            if(tokens[0] == "Net" && tokens[2] == "is" && tokens[3] == "open!"){
+                if(verbose == 1) std::cout << command_output;
+            }
+        }
+        else if(tokens.size() == 3){
+            if(tokens[0] == "track" && tokens[1] == "count:"){
+                if(verbose == 1) std::cout << command_output;
+                used_tracks = std::stoi(tokens[2]);
+            }
+        }
+        if(command_output == "All signals are connected successfully.\n"){
+            if(verbose == 1) std::cout << command_output;
+            ok = true;
+        }
+        if(command_output == "Routing failed. Please check the error messages.\n"){
+            if(verbose == 1) std::cout << command_output;
+            ok = false;
+        }
+    }
+    pclose(fp);
+    if(verbose == 1) std::cout << "-----Verify log----\n";
+    return ok;
+}
 void io::readChannel(Channel *channel, char const *file_path)
 {
     std::ifstream in_file(file_path);
