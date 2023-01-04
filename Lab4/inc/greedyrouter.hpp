@@ -18,4 +18,9 @@ struct GreedyRouter
     void methodC(int column);
     void methodD(int column);
     void methodE(int result_A, int column);
+    void methodF(int column);
+    void needMoreColumn(int column);
+    void methodForSmallCase(int column);
+    // draw for debug
+    void drawForDebug(int column, int whichColumnStart);
 };

@@ -359,3 +359,42 @@ void GreedyRouter::methodE(int result_A, int column)
         }
     }
 }
+
+void GreedyRouter::methodF(int column)
+{
+    // create and save horizontal segments
+    for(int j = 1; j <= this->channel->number_of_tracks; j++){
+        int now_pin_index = this->channel->hor_tracks.at(j);
+        int pre_pin_index = this->channel->pre_hor_tracks.at(j);
+        if(pre_pin_index == 0 && now_pin_index != 0){
+            this->channel->tmp_hor_segments.at(j) = new HSegments(column, j, column);
+        }
+        else if(pre_pin_index != now_pin_index){
+            this->channel->tmp_hor_segments.at(j)->neighbor = column;
+            this->channel->netlist[pre_pin_index]->hor_segments.push_back(this->channel->tmp_hor_segments.at(j));
+            this->channel->tmp_hor_segments.at(j) = nullptr;
+        }
+    }
+}
+
+void GreedyRouter::methodForSmallCase(int column)
+{
+    if(column == -1){
+        int mid = static_cast<int>(this->channel->number_of_tracks / 2);
+        int pin_index = this->channel->top_pins.at(column), sp = this->channel->number_of_tracks, ep = mid + 2;
+        this->channel->fillVerTracks(sp, ep, pin_index);
+        this->channel->fillHorTracks(ep, pin_index);
+        this->channel->netlist[pin_index]->addVerSegments(column, sp, ep);
+
+        pin_index = this->channel->bot_pins.at(column), sp = 0, ep = mid - 2;
+        this->channel->fillVerTracks(sp, ep, pin_index);
+        this->channel->fillHorTracks(ep, pin_index);
+        this->channel->netlist[pin_index]->addVerSegments(column, sp, ep);
+    }
+    if(column == 1){
+        int pin_index = this->channel->bot_pins.at(column), sp = 0, ep = 5;
+        this->channel->fillVerTracks(sp, ep, pin_index);
+        this->channel->fillHorTracks(ep, pin_index);
+        this->channel->netlist[pin_index]->addVerSegments(column, sp, ep);
+    }
+}
