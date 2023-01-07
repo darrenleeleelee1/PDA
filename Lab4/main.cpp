@@ -16,7 +16,8 @@ int main(int argc, char const *argv[])
     
     Timer timer;
 
-    GreedyRouter *gr = new GreedyRouter(9, 2, 6);
+    // GreedyRouter *gr = new GreedyRouter(9, 2, 6);
+    GreedyRouter *gr = new GreedyRouter(20, 0, 0);
     std::cout << "Read Channel\n"; timer.setShortTerm();
     io::readChannel(gr->channel, argv[1]);
     std::cout << "Read time: " << timer.getShortTerm() << "\n";

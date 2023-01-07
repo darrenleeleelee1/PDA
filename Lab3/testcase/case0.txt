@@ -1,6 +1,0 @@
-DieSize 30 30
-DieRows 10 3
-Terminal 1
-T0 10 10 10 10
-NumCell 1
-C0 15 10 10 10

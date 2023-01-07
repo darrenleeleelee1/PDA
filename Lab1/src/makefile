@@ -1,7 +1,7 @@
 CXXPROC = g++
-CPPFLAGS = -g -std=c++11
+CPPFLAGS = -std=c++11 -O3
 
-PROG_TARGET = lab1_prog
+PROG_TARGET = Lab1
 PROG_FILES_TO_LINK = main.o io/io.o cs/cs.o
 
 $(PROG_TARGET): $(PROG_FILES_TO_LINK)

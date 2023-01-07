@@ -1,5 +1,5 @@
 CXXPROC = g++
-CPPFLAGS = -g -O0 -std=c++17 -pthread
+CPPFLAGS = -g -O3 -std=c++17 -pthread
 INCLUDE = -I ./inc 
 
 FM_TO_LINK = src/fm/fm.o src/fm/fm_main.o

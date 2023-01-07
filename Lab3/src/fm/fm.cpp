@@ -74,10 +74,13 @@ void FM::partition()
 {
     int cnt = this->L->num_of_cell;
     int opt_cost = INT32_MAX, cost = 0;
+    std::vector<int> erase_list;
     while(cnt--){
-        for(auto &i : gain){
+        erase_list.clear();
+        for(auto &i : this->gain){
             if(i.second.size() == 0){
-                gain.erase(i.first);
+                // gain.erase(i.first);
+                erase_list.push_back(i.first);
                 continue;
             }
             int base_idx = i.second.front(), nei_idx;
@@ -113,17 +116,17 @@ void FM::partition()
                 nei = this->L->celllist[nei_idx]->is_top;
                 if(base != nei){ // base and its neighbor is on the different side
                     int ori_gain = cell2gain[nei_idx];
-                    gain[ori_gain].remove(nei_idx);
+                    this->gain[ori_gain].remove(nei_idx);
                     ori_gain -= 2 * nei_cost;
                     cell2gain[nei_idx] = ori_gain;
-                    gain[ori_gain].push_back(nei_idx);
+                    this->gain[ori_gain].push_back(nei_idx);
                 }
                 else{ // same side
                     int ori_gain = cell2gain[nei_idx];
-                    gain[ori_gain].remove(nei_idx);
+                    this->gain[ori_gain].remove(nei_idx);
                     ori_gain += 2 * nei_cost;
                     cell2gain[nei_idx] = ori_gain;
-                    gain[ori_gain].push_back(nei_idx);
+                    this->gain[ori_gain].push_back(nei_idx);
                 }
             }
 
@@ -138,6 +141,9 @@ void FM::partition()
                 FM::storePartition(); 
             }
             break;
+        }
+        for(auto i : erase_list){
+            this->gain.erase(i);
         }
     }
 }

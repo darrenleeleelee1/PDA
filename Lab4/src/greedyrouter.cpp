@@ -175,8 +175,17 @@ void GreedyRouter::methodB(int column)
             for(int t = 0; t < static_cast<int>(in_track_vector.size()); t++){
                 for(int p = t + 1; p < static_cast<int>(in_track_vector.size()); p++){
                     if(t != p){
-                        pq.emplace(pin_index, column, this->channel->number_of_tracks
-                        , this->channel->netlist[pin_index], in_track_vector.at(t), in_track_vector.at(p));
+                        int top_track = std::max(in_track_vector.at(t), in_track_vector.at(p));
+                        int bot_track = std::min(in_track_vector.at(t), in_track_vector.at(p));
+
+                        if(this->channel->netlist[pin_index]->status == STATUS::falling){
+                            pq.emplace(pin_index, column, this->channel->number_of_tracks
+                                , this->channel->netlist[pin_index], top_track, bot_track);
+                        }
+                        else{
+                            pq.emplace(pin_index, column, this->channel->number_of_tracks
+                                , this->channel->netlist[pin_index], bot_track, top_track);
+                        }
                     }
                 }    
             }
@@ -379,7 +388,7 @@ void GreedyRouter::methodF(int column)
 
 void GreedyRouter::methodForSmallCase(int column)
 {
-    if(column == -1){
+    if(column == 0){
         int mid = static_cast<int>(this->channel->number_of_tracks / 2);
         int pin_index = this->channel->top_pins.at(column), sp = this->channel->number_of_tracks, ep = mid + 2;
         this->channel->fillVerTracks(sp, ep, pin_index);
@@ -391,7 +400,7 @@ void GreedyRouter::methodForSmallCase(int column)
         this->channel->fillHorTracks(ep, pin_index);
         this->channel->netlist[pin_index]->addVerSegments(column, sp, ep);
     }
-    if(column == 1){
+    if(column == -1){
         int pin_index = this->channel->bot_pins.at(column), sp = 0, ep = 5;
         this->channel->fillVerTracks(sp, ep, pin_index);
         this->channel->fillHorTracks(ep, pin_index);
