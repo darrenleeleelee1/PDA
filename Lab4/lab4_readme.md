@@ -1,7 +1,7 @@
 # Lab4 - Channel Router
-Implement a 2-layer detailed router to complete channel routing.
+Problem: Implement a 2-layer detailed router to complete channel routing.
 
-Use Greedy Channel Router[1] to solve it
+Method: Greedy Channel Router[1]
 
 Input and output formats please refer to [Lab4.pdf](./Lab4.pdf).
 

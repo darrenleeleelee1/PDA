@@ -1,5 +1,5 @@
 # Lab1 - Corner Stitching
-Implement the data stucture - "Corner Stitching"[1].
+Problem: Implement the data stucture - "Corner Stitching"[1].
 
 Input and output formats please refer to [Lab1.pdf](./Lab1.pdf).
 

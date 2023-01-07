@@ -1,8 +1,8 @@
 # Lab2 - Fixed Outline Floorplanning
-Fixed-outline floorplanner that can
+Problem: Fixed-outline floorplanner that can
 handle hard macros.
 
-Use Sequence Pair(SP)[1] to solve.
+Method: Sequence Pair(SP)[1]
 
 Input and output formats please refer to [Lab2.pdf](./Lab2.pdf).
 ## Demonstration

@@ -1,7 +1,7 @@
 # Lab3 - Multi-chip Partition and Placement
-Partition cells into two chips and legalize all standard cells without overlap.
+Problem: Partition cells into two chips and legalize all standard cells without overlap.
 
-Use FM partition[1] and Abacus legalization[2] to solve it.
+Method: FM partition[1] and Abacus legalization[2]
 
 Input and output formats please refer to [Lab3.pdf](./Lab3.pdf).
 ## Demonstration
