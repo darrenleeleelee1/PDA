@@ -30,10 +30,10 @@ public:
     int number_of_free_hor_segments;
     double offset;
     VS_FreeUp() : VerticalSegments(){}
-    VS_FreeUp(int p, int c, int o, Net *n, int _y1, int _y2) : VerticalSegments(p , _y1, _y2), column(c){
+    VS_FreeUp(int p, int c, int num_tracks, Net *n, int _y1, int _y2) : VerticalSegments(p , _y1, _y2), column(c){
         this->net = n;
         this->number_of_free_hor_segments = 0;
-        this->offset = std::max(static_cast<double>(o) / 2 - this->ep, this->ep - static_cast<double>(o) / 2);
+        this->offset = std::min(num_tracks - this->ep, this->ep - 1);
         for(int i = std::min(this->sp, this->ep); i <= std::max(this->sp, this->ep); i++){
             if(this->net->in_tracks.count(i)) this->number_of_free_hor_segments++;
         }
@@ -80,16 +80,18 @@ void GreedyRouter::computeNetsStatus(int column)
                 break;
             }
         }
-        // compute all top, bot number
-        // int test = 0;
-        // int boundry = std::min(sp + this->steady_net_constant, n.second->last_column);
-        // for(int i = sp; i <= boundry; i++){
-        //     if(this->channel->top_pins.at(i) == n.first) test++;
-        //     else if(this->channel->bot_pins.at(i) == n.first) test--;
-        // }
-        // if(test == 0) n.second->status = STATUS::steady;
-        // else if(test > 0) n.second->status = STATUS::rising;
-        // else n.second->status = STATUS::falling;
+
+        /* compute status by the number top > bot = rising, top < bot = falling, top = bot = steady
+        int test = 0;
+        int boundry = std::min(sp + this->steady_net_constant, n.second->last_column);
+        for(int i = sp; i <= boundry; i++){
+            if(this->channel->top_pins.at(i) == n.first) test++;
+            else if(this->channel->bot_pins.at(i) == n.first) test--;
+        }
+        if(test == 0) n.second->status = STATUS::steady;
+        else if(test > 0) n.second->status = STATUS::rising;
+        else n.second->status = STATUS::falling;
+        */ 
 
         // count steady if exist in top bot, no matter the number
         bool top = false, bot = false;
@@ -317,9 +319,21 @@ void GreedyRouter::methodD(int column)
         if(checkVerTracks(element.sp, element.ep, element.pin_index, this->channel->ver_tracks)){
             this->channel->fillVerTracks(element.sp, element.ep, element.pin_index);
             this->channel->fillHorTracks(element.ep, element.pin_index);
-            this->channel->hor_tracks.at(element.sp) = 0;
 
-            this->channel->netlist[element.pin_index]->in_tracks.erase(element.sp);
+            // The other split nets need to be close
+            std::unordered_set<int> tmp_s;
+            for(int i = std::min(element.sp, element.ep); i <= std::max(element.sp, element.ep); i++){
+                if(i == element.ep) continue;
+                if(this->channel->netlist[element.pin_index]->in_tracks.count(i)){
+                    tmp_s.insert(i);
+                    this->channel->hor_tracks.at(i) = 0;
+                }
+            }
+            for(auto i : tmp_s){
+                this->channel->hor_tracks.at(i) = 0;
+                this->channel->netlist[element.pin_index]->in_tracks.erase(i);
+            }
+            // from the verticle segment end point to extend to right
             this->channel->netlist[element.pin_index]->in_tracks.insert(element.ep);
             
             this->channel->netlist[element.pin_index]->addVerSegments(column, element.sp, element.ep);
@@ -388,22 +402,36 @@ void GreedyRouter::methodF(int column)
 
 void GreedyRouter::methodForSmallCase(int column)
 {
-    if(column == 0){
+    if(column == -1){
         int mid = static_cast<int>(this->channel->number_of_tracks / 2);
-        int pin_index = this->channel->top_pins.at(column), sp = this->channel->number_of_tracks, ep = mid + 2;
+        int pin_index = this->channel->top_pins.at(column);
+        int sp = *this->channel->netlist[pin_index]->in_tracks.begin(), ep = mid + 1;
         this->channel->fillVerTracks(sp, ep, pin_index);
         this->channel->fillHorTracks(ep, pin_index);
+        this->channel->netlist[pin_index]->in_tracks.insert(ep);
         this->channel->netlist[pin_index]->addVerSegments(column, sp, ep);
 
-        pin_index = this->channel->bot_pins.at(column), sp = 0, ep = mid - 2;
+        pin_index = this->channel->bot_pins.at(column);
+        sp = *this->channel->netlist[pin_index]->in_tracks.begin(), ep = mid - 1;
         this->channel->fillVerTracks(sp, ep, pin_index);
         this->channel->fillHorTracks(ep, pin_index);
+        this->channel->netlist[pin_index]->in_tracks.insert(ep);
         this->channel->netlist[pin_index]->addVerSegments(column, sp, ep);
     }
-    if(column == -1){
-        int pin_index = this->channel->bot_pins.at(column), sp = 0, ep = 5;
+    if(column == 1){
+        int mid = static_cast<int>(this->channel->number_of_tracks / 2);
+        int pin_index = this->channel->top_pins.at(column);
+        int sp = *this->channel->netlist[pin_index]->in_tracks.begin(), ep = mid;
         this->channel->fillVerTracks(sp, ep, pin_index);
         this->channel->fillHorTracks(ep, pin_index);
+        this->channel->netlist[pin_index]->in_tracks.insert(ep);
+        this->channel->netlist[pin_index]->addVerSegments(column, sp, ep);
+        
+        pin_index = this->channel->bot_pins.at(column);
+        sp = *this->channel->netlist[pin_index]->in_tracks.begin(), ep = mid - 1;
+        this->channel->fillVerTracks(sp, ep, pin_index);
+        this->channel->fillHorTracks(ep, pin_index);
+        this->channel->netlist[pin_index]->in_tracks.insert(ep);
         this->channel->netlist[pin_index]->addVerSegments(column, sp, ep);
     }
 }

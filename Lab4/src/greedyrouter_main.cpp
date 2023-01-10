@@ -1,5 +1,6 @@
 #include "greedyrouter.hpp"
 #include "io.hpp"
+
 void GreedyRouter::drawForDebug(int column, int whichColumnStart){
     if(column >= whichColumnStart){
         std::string t = "./case/case1.txt";
@@ -35,9 +36,9 @@ void GreedyRouter::main()
 
         int result_A = this->methodA(i);
         this->methodB(i);
+        this->methodForSmallCase(i);
         this->methodC(i);
         this->methodD(i);
-        // this->methodForSmallCase(i);
         this->methodE(result_A, i);
         this->methodF(i);
         this->needMoreColumn(i);

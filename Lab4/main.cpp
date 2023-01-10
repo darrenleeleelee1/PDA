@@ -3,12 +3,6 @@
 #include "greedyrouter.hpp"
 #include <iostream>
 #include <utility>
-/*
-Log:
-    GreedyRouter *gr = new GreedyRouter(15, 0, 0); // 21 tracks for case3
-    GreedyRouter *gr = new GreedyRouter(9, 2, 6); // 20 tracks for case3
-    GreedyRouter *gr = new GreedyRouter(6, 0, 1); //  tracks for case2
-*/
 int main(int argc, char const *argv[])
 {
     // usage: ./Lab4 <input> <output> [drawing]
@@ -16,8 +10,7 @@ int main(int argc, char const *argv[])
     
     Timer timer;
 
-    // GreedyRouter *gr = new GreedyRouter(9, 2, 6);
-    GreedyRouter *gr = new GreedyRouter(20, 0, 0);
+    GreedyRouter *gr = new GreedyRouter(20, 1, 0);
     std::cout << "Read Channel\n"; timer.setShortTerm();
     io::readChannel(gr->channel, argv[1]);
     std::cout << "Read time: " << timer.getShortTerm() << "\n";
