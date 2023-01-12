@@ -82,6 +82,8 @@ bool checkVerTracks(int low, int high, int pin_index, std::vector<int> &ver_trac
 }
 void GreedyRouter::computeNetsStatus(int column)
 {
+    // start at next column
+    column = column + 1;
     for(auto n : this->channel->netlist){
         if(n.second->last_column < column) {
             n.second->status = STATUS::steady;
