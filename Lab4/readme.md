@@ -7,10 +7,13 @@ Input and output formats please refer to [Lab4.pdf](./Lab4.pdf).
 
 ## Demonstration
 * case1
+ 
 ![](./drawing/case1.png)
 * case2
+
 ![](./drawing/case2.png)
 * case3(Deutsch
+
 difficult case)
 ![](./drawing/case3.png)
 Download [case1.gds](./drawing/case1.gds), [case2.gds](./drawing/case2.gds) and [case3.gds](./drawing/case3.gds) to see the details.
