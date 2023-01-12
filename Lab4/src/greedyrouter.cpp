@@ -10,15 +10,31 @@ public:
         this->segments_length = std::abs(_y1 - _y2);
     }
     bool operator<(const VerticalSegments &other) const{
+
         return this->segments_length < other.segments_length;
     }
 };
 class VS_Longest : public VerticalSegments
 {
 public:
+    Net *net;
+    int column;
+    int number_of_free_hor_segments;
+    double offset;
     VS_Longest() : VerticalSegments(){}
-    VS_Longest(int p, int _y1, int _y2) : VerticalSegments(p , _y1, _y2){}
+    VS_Longest(int p, int c, int num_tracks, Net *n, int _y1, int _y2) : VerticalSegments(p , _y1, _y2), column(c){
+        this->net = n;
+        this->number_of_free_hor_segments = 0;
+        this->offset = std::min(num_tracks - this->ep, this->ep - 1);
+        for(int i = std::min(this->sp, this->ep); i <= std::max(this->sp, this->ep); i++){
+            if(this->net->in_tracks.count(i)) this->number_of_free_hor_segments++;
+        }
+        if(column < this->net->last_column || this->number_of_free_hor_segments < static_cast<int>(this->net->in_tracks.size())){
+            this->number_of_free_hor_segments--;
+        }
+    }
     bool operator<(const VS_Longest &other) const{
+        if(this->segments_length == other.segments_length) return this->offset < other.offset;
         return this->segments_length < other.segments_length;
     }
 };
@@ -80,18 +96,6 @@ void GreedyRouter::computeNetsStatus(int column)
                 break;
             }
         }
-
-        /* compute status by the number top > bot = rising, top < bot = falling, top = bot = steady
-        int test = 0;
-        int boundry = std::min(sp + this->steady_net_constant, n.second->last_column);
-        for(int i = sp; i <= boundry; i++){
-            if(this->channel->top_pins.at(i) == n.first) test++;
-            else if(this->channel->bot_pins.at(i) == n.first) test--;
-        }
-        if(test == 0) n.second->status = STATUS::steady;
-        else if(test > 0) n.second->status = STATUS::rising;
-        else n.second->status = STATUS::falling;
-        */ 
 
         // count steady if exist in top bot, no matter the number
         bool top = false, bot = false;
@@ -250,13 +254,15 @@ void GreedyRouter::methodC(int column)
                                     , this->channel->netlist[pin_index]->in_tracks.end());
             for(int j = *topmost_track - 1; j > *botmost_track; j--){
                 if(this->channel->hor_tracks.at(j) == 0 || this->channel->hor_tracks.at(j) == pin_index){
-                    pq.emplace(pin_index, *topmost_track, j);
+                    pq.emplace(pin_index, column, this->channel->number_of_tracks
+                                , this->channel->netlist[pin_index], *topmost_track, j);
                 }
             }
             
             for(int j = *botmost_track + 1; j < *topmost_track; j++){
                 if(this->channel->hor_tracks.at(j) == 0 || this->channel->hor_tracks.at(j) == pin_index){
-                    pq.emplace(pin_index, *botmost_track, j);
+                    pq.emplace(pin_index, column, this->channel->number_of_tracks
+                                , this->channel->netlist[pin_index], *botmost_track, j);
                 }
             }
         }
@@ -300,14 +306,16 @@ void GreedyRouter::methodD(int column)
             if(this->channel->netlist[pin_index]->status == rising){
                 for(int j = i + 1; j <= this->channel->number_of_tracks; j++){
                     if(this->channel->hor_tracks.at(j) == 0 || this->channel->hor_tracks.at(j) == pin_index){
-                        pq.emplace(pin_index, i, j);
+                        pq.emplace(pin_index, column, this->channel->number_of_tracks
+                                , this->channel->netlist[pin_index], i, j);
                     }
                 }
             }
             else if(this->channel->netlist[pin_index]->status == falling){
                 for(int j = i - 1; j >= 1; j--){
                     if(this->channel->hor_tracks.at(j) == 0 || this->channel->hor_tracks.at(j) == pin_index){
-                        pq.emplace(pin_index, i, j);
+                        pq.emplace(pin_index, column, this->channel->number_of_tracks
+                                , this->channel->netlist[pin_index], i, j);
                     }
                 }
             }
