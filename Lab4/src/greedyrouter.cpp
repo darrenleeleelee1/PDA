@@ -214,6 +214,7 @@ void GreedyRouter::methodB(int column)
                 this->channel->netlist[element.pin_index]->in_tracks.insert(element.ep);
             }
             else{
+                // for verticle segment that can free up all than it could be close also
                 unsigned int number_to_free = 0;
                 for(int i = std::min(element.sp, element.ep); i <= std::max(element.sp, element.ep); i++){
                     if(this->channel->netlist[element.pin_index]->in_tracks.count(i)) number_to_free++;
@@ -271,7 +272,7 @@ void GreedyRouter::methodC(int column)
     }
     while(!pq.empty()){
         auto element = pq.top(); pq.pop();
-        // if(element.segments_length < this->minimum_jog_length) break;
+        if(element.segments_length < this->minimum_jog_length) break;
         if(checkVerTracks(element.sp, element.ep, element.pin_index, this->channel->ver_tracks)){
             this->channel->fillVerTracks(element.sp, element.ep, element.pin_index);
             

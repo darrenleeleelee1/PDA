@@ -46,6 +46,7 @@ void GreedyRouter::main(bool for_small_case)
         // clear verticle track
         this->channel->clearVerTracks();
 
+        // drawForDebug(current column, which column start to draw)
         this->drawForDebug(i, INT32_MAX);
         
     }
