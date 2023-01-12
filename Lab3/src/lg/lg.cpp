@@ -3,7 +3,7 @@
 #include <algorithm>
 void Abacus::splitRow()
 {
-    
+    // split subrow by obstacles
     for(auto t : this->L->terlist){
         int bottommost_row = t->ll_coor.y / this->L->row_hei;
         int topmost_row = (t->ll_coor.y + t->height - 1) / this->L->row_hei;
@@ -50,8 +50,6 @@ void Abacus::splitRow()
         }
     }
 
-    
-        
     for(int i = 0; i < this->L->num_of_row; i++){
         this->row_cells[i].resize(this->num_of_sub_row[i]);
         this->row_clusters[i].resize(this->num_of_sub_row[i]);

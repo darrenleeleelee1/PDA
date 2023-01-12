@@ -47,6 +47,12 @@ python3 draw.py <input> <output> <drawing output>
 ```
 python3 draw.py case/case3.txt out/case3.txt drawing/case3/layout3
 ```
+## Log
+HPWL
+* case1: cost = 24.6457, time = 0s
+* case2: cost = 68136.1, time = 0s
+* case3: cost = 1.65533e+06, process time = 3s
+* case4: cost = 3.14406e+07, process time = 141s
 ## Reference 
 * \[1\][C. M. Fiduccia and R. M. Mattheyses, "A linear-time heuristic for improving network partitions," in Proc. 19th Design Autom. Conf., 1982,pp. 241–247](https://ieeexplore.ieee.org/document/1585498)
 * \[2\][P. Spindler, U. Schlichtmann, and . M. Johannes, Abacus: fast legalization of standard cell circuits with minimal movement, ISPD’08, 2008](https://dl.acm.org/doi/10.1145/1353629.1353640)

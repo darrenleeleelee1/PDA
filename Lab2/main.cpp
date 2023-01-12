@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     io::readBlock(L, argv[2]);
     io::readNet(L, argv[3]);
     L.initLayout();
-    // std::srand(std::time(NULL));
+    std::srand(std::time(NULL));
     while(L.opt_sp == nullptr){
         L.sp->randomSP(); 
         L.SA(4e8, 1e6, 0.85, 500, 50, L.alpha); // T, T_frozen, r, k, num_nei, alpha_ratio

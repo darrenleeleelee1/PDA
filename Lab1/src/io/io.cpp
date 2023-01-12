@@ -13,7 +13,7 @@ void readCaseToLayout(Result &R, char const *file_path)
     getline(input, line);
     ss.clear(); ss.str(line);
     int tmp_width, tmp_height;
-    coordinate tmp_coor;
+    Coordinate tmp_coor;
     ss >> tmp_width >> tmp_height;
     Layout L{Layout{tmp_width, tmp_height}};
     while(getline(input, line))
@@ -33,18 +33,18 @@ void readCaseToLayout(Result &R, char const *file_path)
         {
             ss >> tmp_coor.x >> tmp_coor.y >> tmp_width >> tmp_height;
             // becareful tileCreation is using ul coordinate
-            if(L.tileCreation(coordinate{tmp_coor.x, tmp_coor.y + tmp_height}, tmp_width, tmp_height, stoi(token))) std::cout << "#" << token << " is created\n";
+            if(L.tileCreation(Coordinate{tmp_coor.x, tmp_coor.y + tmp_height}, tmp_width, tmp_height, stoi(token))) std::cout << "#" << token << " is created\n";
             else std::cout << "@" << token << " created failed!\n";
             R.all_block_tile_min_pq.push(stoi(token));
             R.tile_index2coor[stoi(token)] = tmp_coor;
         }
     }
-    R.all_tiles = L.directedAreaEnumeration({coordinate(0, L.height)}, L.width, L.height);
+    R.all_tiles = L.directedAreaEnumeration({Coordinate(0, L.height)}, L.width, L.height);
     
     R.L = L;
     return;
 }
-std::pair<int, int> calcNeighborSpaceOrBlock(Layout L, coordinate ll_core, int index)
+std::pair<int, int> calcNeighborSpaceOrBlock(Layout L, Coordinate ll_core, int index)
 {
     Tile* cur = L.pointFinding(L.ll_tile, ll_core);
     if(index != cur->index)
@@ -52,10 +52,10 @@ std::pair<int, int> calcNeighborSpaceOrBlock(Layout L, coordinate ll_core, int i
         std::cout << "Index Error.\n";
         return std::make_pair(-1, -1);
     }
-    std::vector<Tile*> lnt = L.neighborFinding(cur, orientation::Left); // left neighbors
-    std::vector<Tile*> rnt = L.neighborFinding(cur, orientation::Right); // right neighbors
-    std::vector<Tile*> tnt = L.neighborFinding(cur, orientation::Top); // Top neighbors
-    std::vector<Tile*> bnt = L.neighborFinding(cur, orientation::Bottom); // Bottom neighbors
+    std::vector<Tile*> lnt = L.neighborFinding(cur, Orientation::Left); // left neighbors
+    std::vector<Tile*> rnt = L.neighborFinding(cur, Orientation::Right); // right neighbors
+    std::vector<Tile*> tnt = L.neighborFinding(cur, Orientation::Top); // Top neighbors
+    std::vector<Tile*> bnt = L.neighborFinding(cur, Orientation::Bottom); // Bottom neighbors
     int block = 0, space = 0;
     for(auto i : lnt)
     {
@@ -79,12 +79,12 @@ std::pair<int, int> calcNeighborSpaceOrBlock(Layout L, coordinate ll_core, int i
     }
     return std::make_pair(block, space);
 }
-void Result::Out(outputs o, char const *file_path)
+void Result::Out(Outputs o, char const *file_path)
 {
     int top, tmp_block, tmp_space;
     switch (o)
     {
-    case outputs::StandardO:
+    case Outputs::StandardO:
         std::cout << all_tiles.size() << std::endl;
         while(!all_block_tile_min_pq.empty())
         {
@@ -95,7 +95,7 @@ void Result::Out(outputs o, char const *file_path)
         }
         for(auto i : point_finding_list) std::cout << i.x << " " << i.y << std::endl;
         break;
-    case outputs::Files:
+    case Outputs::Files:
         std::ofstream out_file(file_path, std::ofstream::trunc);
         out_file << all_tiles.size() << std::endl;
         while(!all_block_tile_min_pq.empty())

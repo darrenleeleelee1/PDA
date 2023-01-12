@@ -33,7 +33,7 @@ void SP::calMatch()
 }
 void SP::randomSP()
 {
-    // std::srand(std::time(NULL));
+    std::srand(std::time(NULL));
     std::random_shuffle(this->pos_seq.begin(), this->pos_seq.end());
     std::random_shuffle(this->neg_seq.begin(), this->neg_seq.end());
     this->calMatch();
@@ -152,7 +152,6 @@ void Layout::addTer(std::string s, int a, int b)
 void Layout::SA(double T, double T_frozen, double r, int k, int num_look_nei, double alpha_ratio)
 {
       
-    // double T = 400, T_frozen = 100, r = 0.9;
     int64_t old_cost = this->sp->countCost(this, alpha_ratio), new_cost, nei_cost;
     while(T >= T_frozen){
         int n1, n2, op, action, action_rot = -1, nei_n1, nei_n2, nei_rot, nei_action;
@@ -231,15 +230,12 @@ void Layout::SA(double T, double T_frozen, double r, int k, int num_look_nei, do
 
             double accept = (double)std::rand() / (double)RAND_MAX;
             if(new_cost < old_cost){
-                // std::cout << old_cost << " " << new_cost << std::endl;
                 old_cost = new_cost;
             }
             else if(accept < (double)std::exp((double)-(new_cost) / (double)T)){
-                // std::cout << "up hill " << (double)std::exp((double)-(new_cost) / (double)T) << std::endl;
                 old_cost = new_cost;
             }
             else{
-                // TODO: 
                 // undo
                 if(~nei_rot){
                     this->sp->swapBorders(nei_rot);
@@ -256,7 +252,6 @@ void Layout::SA(double T, double T_frozen, double r, int k, int num_look_nei, do
                     break;
                 }
             }
-            // new_cost = this->sp->countCost(this, alpha_ratio);
             if(this->opt_cost > new_cost && (this->chip_width <= this->width && this->chip_height <= this->height)){
                 this->opt_cost = new_cost;
                 std::cout << "Find better cost = " << new_cost << " in fixed outline.\n";

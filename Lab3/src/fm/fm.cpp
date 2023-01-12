@@ -7,7 +7,6 @@ int FM::overlap(Cell* a, Cell* b)
     int ra_x = la_x + a->width, ra_y = la_y + a->height;
     int rb_x = lb_x + b->width, rb_y = lb_y + b->height;
 
-    
     int x_dist = std::min(ra_x, rb_x) - std::max(la_x, lb_x);
     int y_dist = std::min(ra_y, rb_y) - std::max(la_y, lb_y);
     int area_I = 0;
@@ -17,7 +16,6 @@ int FM::overlap(Cell* a, Cell* b)
 }
 void FM::initGraph()
 {
-    
     this->adj.resize(this->L->num_of_cell);
     for(int i = 0; i < this->L->num_of_cell; i++){
         for(int j = i + 1; j < this->L->num_of_cell; j++){
@@ -79,7 +77,6 @@ void FM::partition()
         erase_list.clear();
         for(auto &i : this->gain){
             if(i.second.size() == 0){
-                // gain.erase(i.first);
                 erase_list.push_back(i.first);
                 continue;
             }
@@ -91,7 +88,7 @@ void FM::partition()
             if(base){
                 int tmp_num_top = this->bal_top_cell - 1;
                 int tmp_num_bot = this->bal_bot_cell + 1;
-                if((double)tmp_num_bot > this->balance_factor * (tmp_num_top + tmp_num_bot) + 1) continue;
+                if(static_cast<double>(tmp_num_bot) > this->balance_factor * (tmp_num_top + tmp_num_bot) + 1) continue;
                 else{
                     this->bal_top_cell = tmp_num_top;
                     this->bal_bot_cell = tmp_num_bot;
@@ -100,7 +97,7 @@ void FM::partition()
             else{
                 int tmp_num_top = this->bal_top_cell + 1;
                 int tmp_num_bot = this->bal_bot_cell - 1;
-                if((double)tmp_num_top > this->balance_factor * (tmp_num_top + tmp_num_bot) + 1) continue;
+                if(static_cast<double>(tmp_num_top) > this->balance_factor * (tmp_num_top + tmp_num_bot) + 1) continue;
                 else{
                     this->bal_top_cell = tmp_num_top;
                     this->bal_bot_cell = tmp_num_bot;
@@ -136,7 +133,7 @@ void FM::partition()
             cost += base_gain;
             locklist.insert(base_idx);
 
-            if(cost < opt_cost || (cost == opt_cost && ((double)std::max(this->bal_top_cell, this->bal_bot_cell) / (this->bal_top_cell + this->bal_bot_cell)) <= this->balance_factor)){
+            if(cost < opt_cost || (cost == opt_cost && (static_cast<double>(std::max(this->bal_top_cell, this->bal_bot_cell)) / (this->bal_top_cell + this->bal_bot_cell)) <= this->balance_factor)){
                 opt_cost = cost;
                 FM::storePartition(); 
             }

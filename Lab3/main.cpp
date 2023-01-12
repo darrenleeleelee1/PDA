@@ -1,9 +1,7 @@
 #include <iostream>
 #include <algorithm>
-#include <pthread.h>
 #include "ds/layout.hpp"
 #include "ds/time.hpp"
-#include "ds/concurrent.hpp"
 #include "io/input.hpp"
 #include "fm/fm.hpp"
 #include "lg/lg.hpp"
@@ -32,19 +30,11 @@ int main(int argc, char **argv)
 
     std::cout << "Abacus legalizationing.\n"; timer.setShortTerm();
     Layout top, bot;
-    
     L.split(top, bot);
     Abacus *abacus_top = new Abacus(&top);
     Abacus *abacus_bot = new Abacus(&bot);
     abacus_top->main();
     abacus_bot->main();
-    // pthread_t lg_top, lg_bot;
-    // pthread_create(&lg_top, NULL, concurrentLegalization, (void*) abacus_top);
-    // pthread_create(&lg_bot, NULL, concurrentLegalization, (void*) abacus_bot);
-    // pthread_join(lg_top, NULL);
-    // pthread_join(lg_bot, NULL);
-    // if(abacus_top->ok == false) return 0;
-    // if(abacus_bot->ok == false) return 0;
     std::cout << "Abacus time: " << timer.getShortTerm() << "\n\n";
     
     // sort cells by their name for lab3 ouput metric
