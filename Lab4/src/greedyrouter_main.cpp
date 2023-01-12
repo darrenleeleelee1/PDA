@@ -32,7 +32,7 @@ void GreedyRouter::main(bool for_small_case)
         this->channel->pre_hor_tracks.assign(this->channel->hor_tracks.begin(), this->channel->hor_tracks.end());
         
         // compute all nets status
-        this->computeNetsStatus(i + 1);
+        this->computeNetsStatus(i);
 
         int result_A = this->methodA(i);
         this->methodB(i);
