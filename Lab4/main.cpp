@@ -16,7 +16,8 @@ int main(int argc, char const *argv[])
     std::cout << "Read time: " << timer.getShortTerm() << "\n";
     
     std::cout << "Routing\n"; timer.setShortTerm();
-    gr->main();
+    if(gr->channel->number_of_columns <= 15) gr->main(true);
+    else gr->main();
     std::cout << "Routing time: " << timer.getShortTerm() << "\n";
 
     std::cout << "Write Nets\n"; timer.setShortTerm();

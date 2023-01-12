@@ -25,7 +25,7 @@ void GreedyRouter::needMoreColumn(int column)
         }
     }
 }
-void GreedyRouter::main()
+void GreedyRouter::main(bool for_small_case)
 {
     for(int i = 0; i < this->channel->number_of_columns; i++){
         // save pre horizontal tracks
@@ -36,7 +36,7 @@ void GreedyRouter::main()
 
         int result_A = this->methodA(i);
         this->methodB(i);
-        this->methodForSmallCase(i);
+        if(for_small_case) this->methodForSmallCase(i);
         this->methodC(i);
         this->methodD(i);
         this->methodE(result_A, i);

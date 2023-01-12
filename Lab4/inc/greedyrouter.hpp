@@ -12,7 +12,7 @@ struct GreedyRouter
     {
         this->channel = new Channel(i);
     }
-    void main();
+    void main(bool for_small_case = false);
     void computeNetsStatus(int column);
     int methodA(int column);
     void methodB(int column);
